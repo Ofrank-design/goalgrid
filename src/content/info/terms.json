@@ -1,0 +1,107 @@
+{
+ "slug": "terms",
+ "title": "Terms of use",
+ "eyebrow": "TERMS",
+ "lead": "The rules for using GoalGrid. Using the service means you accept them.",
+ "sections": [
+  {
+   "id": "who",
+   "heading": "Who can use GoalGrid",
+   "paragraphs": [
+    "You must be 18 or over, or the age of majority where you live. You are responsible for what happens under your account, for giving accurate information and for keeping your password private."
+   ]
+  },
+  {
+   "id": "service",
+   "heading": "What the service is",
+   "paragraphs": [
+    "GoalGrid provides football predictions and analysis for information and entertainment. It is not betting, financial or professional advice. We do not guarantee that predictions are accurate or that the service is always available, and features can change."
+   ]
+  },
+  {
+   "id": "plans",
+   "heading": "Free access",
+   "paragraphs": [
+    "All GoalGrid features, including the tools called Pro and Premium, are free to use with an account. We may limit how often heavy tools can be used, and we may withdraw access that has been misused."
+   ]
+  },
+  {
+   "id": "community",
+   "heading": "Community rules",
+   "paragraphs": [
+    "You keep ownership of what you post, and you give us permission to display it on the service. You are responsible for it. You agree not to:"
+   ],
+   "bullets": [
+    "harass, threaten or abuse anyone, or post hateful content;",
+    "post spam, scams, or promotions for bookmakers, tipsters or gambling offers;",
+    "post illegal content or other people's private information;",
+    "impersonate anyone, or create several accounts to affect the leaderboard;",
+    "try to interfere with how other people use the community."
+   ],
+   "note": "Posts can be reported and removed, and accounts can be suspended."
+  },
+  {
+   "id": "challenges",
+   "heading": "Prediction challenges",
+   "paragraphs": [
+    "Challenges are played for points only, which have no monetary value. Picks close at kickoff and are scored automatically from official results supplied by our data providers. We may void picks when a match is postponed or cancelled or when the data is wrong, and we will correct clear errors."
+   ]
+  },
+  {
+   "id": "acceptable",
+   "heading": "Acceptable use",
+   "paragraphs": [
+    "Do not scrape GoalGrid at scale or use automated access without our written permission. Do not probe, attack or overload the service, or try to reverse engineer it. The service's programming interfaces are for GoalGrid's own pages."
+   ]
+  },
+  {
+   "id": "ip",
+   "heading": "Intellectual property",
+   "paragraphs": [
+    "The software, text and design of GoalGrid belong to us. Club names, crests and league logos belong to their owners and are used only to identify teams and competitions. GoalGrid is not affiliated with or endorsed by any club, league or player. Third party data stays subject to its providers' terms."
+   ]
+  },
+  {
+   "id": "disclaimer",
+   "heading": "Disclaimers",
+   "paragraphs": [
+    "The service is provided \"as is\". To the extent the law allows, we give no warranty that it is accurate, complete or uninterrupted. Predictions can be wrong, and we are not responsible for decisions you make based on them, including betting losses."
+   ]
+  },
+  {
+   "id": "liability",
+   "heading": "Limit of liability",
+   "paragraphs": [
+    "To the extent the law allows, we are not liable for indirect or consequential losses. Nothing in these terms limits liability that cannot be limited by law, such as for fraud or for death or personal injury caused by negligence."
+   ]
+  },
+  {
+   "id": "ending",
+   "heading": "Suspension and ending",
+   "paragraphs": [
+    "You can delete your account at any time. We may suspend or end access if you break these terms."
+   ]
+  },
+  {
+   "id": "changes",
+   "heading": "Changes to these terms",
+   "paragraphs": [
+    "We may update these terms. If you keep using GoalGrid after a change, you accept the new terms. We will tell you about significant changes."
+   ]
+  },
+  {
+   "id": "law",
+   "heading": "Governing law",
+   "paragraphs": [
+    "These terms are governed by the laws of the place where GoalGrid's operator is based, and the courts there have jurisdiction, except where consumer protection law lets you bring a claim in your own country."
+   ]
+  },
+  {
+   "id": "contact",
+   "heading": "Contact",
+   "paragraphs": [
+    "Questions about these terms can be sent through the [contact page](/contact)."
+   ]
+  }
+ ]
+}

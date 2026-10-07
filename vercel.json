@@ -1,0 +1,4 @@
+{ "crons": [
+  { "path": "/api/cron/jobs?job=refresh", "schedule": "0 4 * * *" },
+  { "path": "/api/cron/jobs?job=daily", "schedule": "30 7 * * *" }
+] }

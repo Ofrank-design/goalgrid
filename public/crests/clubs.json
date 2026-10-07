@@ -1,0 +1,578 @@
+[
+{
+"key": "arsenal",
+"slug": "arsenal",
+"name": "Arsenal",
+"league": "premier-league"
+},
+{
+"key": "astonvilla",
+"slug": "aston-villa",
+"name": "Aston Villa",
+"league": "premier-league"
+},
+{
+"key": "bournemouth",
+"slug": "bournemouth",
+"name": "Bournemouth",
+"league": "premier-league"
+},
+{
+"key": "brentford",
+"slug": "brentford",
+"name": "Brentford",
+"league": "premier-league"
+},
+{
+"key": "brighton",
+"slug": "brighton-hove-albion",
+"name": "Brighton & Hove Albion",
+"league": "premier-league"
+},
+{
+"key": "burnley",
+"slug": "burnley",
+"name": "Burnley",
+"league": "premier-league"
+},
+{
+"key": "chelsea",
+"slug": "chelsea",
+"name": "Chelsea",
+"league": "premier-league"
+},
+{
+"key": "crystalpalace",
+"slug": "crystal-palace",
+"name": "Crystal Palace",
+"league": "premier-league"
+},
+{
+"key": "everton",
+"slug": "everton",
+"name": "Everton",
+"league": "premier-league"
+},
+{
+"key": "fulham",
+"slug": "fulham",
+"name": "Fulham",
+"league": "premier-league"
+},
+{
+"key": "leeds",
+"slug": "leeds-united",
+"name": "Leeds United",
+"league": "premier-league"
+},
+{
+"key": "liverpool",
+"slug": "liverpool",
+"name": "Liverpool",
+"league": "premier-league"
+},
+{
+"key": "manchestercity",
+"slug": "man-city",
+"name": "Manchester City",
+"league": "premier-league"
+},
+{
+"key": "manchesterunited",
+"slug": "manchester-utd",
+"name": "Manchester United",
+"league": "premier-league"
+},
+{
+"key": "newcastle",
+"slug": "newcastle-united",
+"name": "Newcastle United",
+"league": "premier-league"
+},
+{
+"key": "nottinghamforest",
+"slug": "nottingham-forest",
+"name": "Nottingham Forest",
+"league": "premier-league"
+},
+{
+"key": "sunderland",
+"slug": "sunderland",
+"name": "Sunderland",
+"league": "premier-league"
+},
+{
+"key": "tottenham",
+"slug": "tottenham-hotspur",
+"name": "Tottenham Hotspur",
+"league": "premier-league"
+},
+{
+"key": "westham",
+"slug": "west-ham-united",
+"name": "West Ham United",
+"league": "premier-league"
+},
+{
+"key": "wolverhampton",
+"slug": "wolverhampton-wanderers",
+"name": "Wolverhampton Wanderers",
+"league": "premier-league"
+},
+{
+"key": "alaves",
+"slug": "deportivo-alaves",
+"name": "Deportivo Alavés",
+"league": "la-liga"
+},
+{
+"key": "athleticclub",
+"slug": "athletic-bilbao",
+"name": "Athletic Club",
+"league": "la-liga"
+},
+{
+"key": "atleticomadrid",
+"slug": "atletico-madrid",
+"name": "Atlético Madrid",
+"league": "la-liga"
+},
+{
+"key": "barcelona",
+"slug": "barcelona",
+"name": "Barcelona",
+"league": "la-liga"
+},
+{
+"key": "betis",
+"slug": "real-betis-balompie",
+"name": "Real Betis",
+"league": "la-liga"
+},
+{
+"key": "celta",
+"slug": "celta-vigo",
+"name": "Celta Vigo",
+"league": "la-liga"
+},
+{
+"key": "elche",
+"slug": "elche",
+"name": "Elche",
+"league": "la-liga"
+},
+{
+"key": "espanyol",
+"slug": "rcd-espanyol-barcelona",
+"name": "Espanyol",
+"league": "la-liga"
+},
+{
+"key": "getafe",
+"slug": "getafe",
+"name": "Getafe",
+"league": "la-liga"
+},
+{
+"key": "girona",
+"slug": "girona",
+"name": "Girona",
+"league": "la-liga"
+},
+{
+"key": "levante",
+"slug": "levante-ud",
+"name": "Levante",
+"league": "la-liga"
+},
+{
+"key": "mallorca",
+"slug": "rcd-mallorca",
+"name": "Mallorca",
+"league": "la-liga"
+},
+{
+"key": "osasuna",
+"slug": "ca-osasuna",
+"name": "Osasuna",
+"league": "la-liga"
+},
+{
+"key": "oviedo",
+"slug": "real-oviedo",
+"name": "Real Oviedo",
+"league": "la-liga"
+},
+{
+"key": "rayovallecano",
+"slug": "rayo-vallecano-madrid",
+"name": "Rayo Vallecano",
+"league": "la-liga"
+},
+{
+"key": "realmadrid",
+"slug": "real-madrid",
+"name": "Real Madrid",
+"league": "la-liga"
+},
+{
+"key": "realsociedad",
+"slug": "real-sociedad-futbol",
+"name": "Real Sociedad",
+"league": "la-liga"
+},
+{
+"key": "sevilla",
+"slug": "sevilla",
+"name": "Sevilla",
+"league": "la-liga"
+},
+{
+"key": "valencia",
+"slug": "valencia",
+"name": "Valencia",
+"league": "la-liga"
+},
+{
+"key": "villarreal",
+"slug": "villarreal",
+"name": "Villarreal",
+"league": "la-liga"
+},
+{
+"key": "atalanta",
+"slug": "atalanta-bc",
+"name": "Atalanta",
+"league": "serie-a"
+},
+{
+"key": "bologna",
+"slug": "bologna",
+"name": "Bologna",
+"league": "serie-a"
+},
+{
+"key": "cagliari",
+"slug": "cagliari-calcio",
+"name": "Cagliari",
+"league": "serie-a"
+},
+{
+"key": "como",
+"slug": "como",
+"name": "Como",
+"league": "serie-a"
+},
+{
+"key": "cremonese",
+"slug": "cremonese",
+"name": "Cremonese",
+"league": "serie-a"
+},
+{
+"key": "fiorentina",
+"slug": "acf-fiorentina",
+"name": "Fiorentina",
+"league": "serie-a"
+},
+{
+"key": "genoa",
+"slug": "genoa-cfc",
+"name": "Genoa",
+"league": "serie-a"
+},
+{
+"key": "inter",
+"slug": "inter",
+"name": "Inter",
+"league": "serie-a"
+},
+{
+"key": "juventus",
+"slug": "juventus",
+"name": "Juventus",
+"league": "serie-a"
+},
+{
+"key": "lazio",
+"slug": "lazio",
+"name": "Lazio",
+"league": "serie-a"
+},
+{
+"key": "lecce",
+"slug": "lecce",
+"name": "Lecce",
+"league": "serie-a"
+},
+{
+"key": "milan",
+"slug": "milan",
+"name": "AC Milan",
+"league": "serie-a"
+},
+{
+"key": "napoli",
+"slug": "napoli",
+"name": "Napoli",
+"league": "serie-a"
+},
+{
+"key": "parma",
+"slug": "parma",
+"name": "Parma",
+"league": "serie-a"
+},
+{
+"key": "pisa",
+"slug": "pisa",
+"name": "Pisa",
+"league": "serie-a"
+},
+{
+"key": "roma",
+"slug": "roma",
+"name": "AS Roma",
+"league": "serie-a"
+},
+{
+"key": "sassuolo",
+"slug": "sassuolo-calcio",
+"name": "Sassuolo",
+"league": "serie-a"
+},
+{
+"key": "torino",
+"slug": "torino",
+"name": "Torino",
+"league": "serie-a"
+},
+{
+"key": "udinese",
+"slug": "udinese-calcio",
+"name": "Udinese",
+"league": "serie-a"
+},
+{
+"key": "verona",
+"slug": "hellas-verona",
+"name": "Hellas Verona",
+"league": "serie-a"
+},
+{
+"key": "augsburg",
+"slug": "augsburg",
+"name": "Augsburg",
+"league": "bundesliga"
+},
+{
+"key": "bayern",
+"slug": "bayern-munich",
+"name": "Bayern Munich",
+"league": "bundesliga"
+},
+{
+"key": "dortmund",
+"slug": "dortmund",
+"name": "Borussia Dortmund",
+"league": "bundesliga"
+},
+{
+"key": "eintrachtfrankfurt",
+"slug": "eintracht-frankfurt",
+"name": "Eintracht Frankfurt",
+"league": "bundesliga"
+},
+{
+"key": "freiburg",
+"slug": "freiburg",
+"name": "Freiburg",
+"league": "bundesliga"
+},
+{
+"key": "gladbach",
+"slug": "borussia-monchengladbach",
+"name": "Borussia Mönchengladbach",
+"league": "bundesliga"
+},
+{
+"key": "hamburg",
+"slug": "hamburger",
+"name": "Hamburger SV",
+"league": "bundesliga"
+},
+{
+"key": "heidenheim",
+"slug": "heidenheim",
+"name": "Heidenheim",
+"league": "bundesliga"
+},
+{
+"key": "hoffenheim",
+"slug": "hoffenheim",
+"name": "Hoffenheim",
+"league": "bundesliga"
+},
+{
+"key": "koln",
+"slug": "cologne",
+"name": "1. FC Köln",
+"league": "bundesliga"
+},
+{
+"key": "leipzig",
+"slug": "leipzig",
+"name": "RB Leipzig",
+"league": "bundesliga"
+},
+{
+"key": "leverkusen",
+"slug": "leverkusen",
+"name": "Bayer Leverkusen",
+"league": "bundesliga"
+},
+{
+"key": "mainz",
+"slug": "mainz",
+"name": "Mainz 05",
+"league": "bundesliga"
+},
+{
+"key": "pauli",
+"slug": "st-pauli",
+"name": "St. Pauli",
+"league": "bundesliga"
+},
+{
+"key": "stuttgart",
+"slug": "stuttgart",
+"name": "VfB Stuttgart",
+"league": "bundesliga"
+},
+{
+"key": "unionberlin",
+"slug": "union-berlin",
+"name": "Union Berlin",
+"league": "bundesliga"
+},
+{
+"key": "werder",
+"slug": "werder-bremen",
+"name": "Werder Bremen",
+"league": "bundesliga"
+},
+{
+"key": "wolfsburg",
+"slug": "wolfsburg",
+"name": "Wolfsburg",
+"league": "bundesliga"
+},
+{
+"key": "angers",
+"slug": "angers-sco",
+"name": "Angers",
+"league": "ligue-1"
+},
+{
+"key": "auxerre",
+"slug": "aj-auxerre",
+"name": "Auxerre",
+"league": "ligue-1"
+},
+{
+"key": "brest",
+"slug": "brest",
+"name": "Brest",
+"league": "ligue-1"
+},
+{
+"key": "havre",
+"slug": "le-havre",
+"name": "Le Havre",
+"league": "ligue-1"
+},
+{
+"key": "lens",
+"slug": "racing-lens",
+"name": "Lens",
+"league": "ligue-1"
+},
+{
+"key": "lille",
+"slug": "losc-lille",
+"name": "Lille",
+"league": "ligue-1"
+},
+{
+"key": "lorient",
+"slug": "lorient",
+"name": "Lorient",
+"league": "ligue-1"
+},
+{
+"key": "lyon",
+"slug": "olympique-lyon",
+"name": "Lyon",
+"league": "ligue-1"
+},
+{
+"key": "marseille",
+"slug": "marseille",
+"name": "Marseille",
+"league": "ligue-1"
+},
+{
+"key": "metz",
+"slug": "metz",
+"name": "Metz",
+"league": "ligue-1"
+},
+{
+"key": "monaco",
+"slug": "monaco",
+"name": "AS Monaco",
+"league": "ligue-1"
+},
+{
+"key": "nantes",
+"slug": "nantes",
+"name": "Nantes",
+"league": "ligue-1"
+},
+{
+"key": "nice",
+"slug": "ogc-nice",
+"name": "Nice",
+"league": "ligue-1"
+},
+{
+"key": "parisfc",
+"slug": "paris",
+"name": "Paris FC",
+"league": "ligue-1"
+},
+{
+"key": "psg",
+"slug": "psg",
+"name": "Paris Saint-Germain",
+"league": "ligue-1"
+},
+{
+"key": "rennais",
+"slug": "stade-rennais",
+"name": "Rennes",
+"league": "ligue-1"
+},
+{
+"key": "strasbourg",
+"slug": "strasbourg-alsace",
+"name": "Strasbourg",
+"league": "ligue-1"
+},
+{
+"key": "toulouse",
+"slug": "toulouse",
+"name": "Toulouse",
+"league": "ligue-1"
+}
+]

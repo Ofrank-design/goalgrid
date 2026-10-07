@@ -1,0 +1,61 @@
+{
+ "slug": "about",
+ "title": "About GoalGrid",
+ "eyebrow": "ABOUT GOALGRID",
+ "lead": "Football intelligence you can check. GoalGrid turns match data into probabilities and shows its working.",
+ "sections": [
+  {
+   "id": "what",
+   "heading": "What GoalGrid is",
+   "paragraphs": [
+    "GoalGrid is an independent football intelligence platform. For every match in the Premier League, LaLiga, Serie A, Bundesliga and Ligue 1 it publishes a probability for each result, an expected score, and the evidence behind the numbers: how up to fifty statistical, rating and machine learning models agree or disagree, what the betting market thinks, the weather at kickoff and the latest headlines."
+   ]
+  },
+  {
+   "id": "why",
+   "heading": "Why it exists",
+   "paragraphs": [
+    "Most football predictions arrive as a confident pick with no explanation. We think a prediction is a probability, and a probability is only useful if you can see how it was made and how often it has been right. So GoalGrid shows both."
+   ]
+  },
+  {
+   "id": "different",
+   "heading": "What makes it different",
+   "bullets": [
+    "Every number comes with its source and a confidence score.",
+    "Models are tested on matches they have not seen, and their weights follow the results.",
+    "Disagreement between models is shown, not hidden.",
+    "Accuracy is public. Every prediction is stored before kickoff and scored afterwards on the [accuracy page](/accuracy).",
+    "AI language models only read a list of verified facts, and they can move a forecast by at most a quarter."
+   ]
+  },
+  {
+   "id": "plans",
+   "heading": "Everything is free",
+   "paragraphs": [
+    "GoalGrid is free for everyone with an account: no payments and no access codes. The match view gives you today's matches with headline probabilities. The Pro tools add the full probability center, model by model comparison and the market view. The Premium tools add AI analysis and how each model has performed. Heavy tools are rate limited per account so the service stays fast."
+   ]
+  },
+  {
+   "id": "community",
+   "heading": "The community",
+   "paragraphs": [
+    "Every match has a thread. You can make your own prediction before kickoff and earn points for being well calibrated, then climb the weekly leaderboard. It is played for points only."
+   ]
+  },
+  {
+   "id": "not",
+   "heading": "What GoalGrid is not",
+   "paragraphs": [
+    "GoalGrid is not a bookmaker. It does not take bets, hold money on matches or recommend bets. Read more on our [responsible use](/responsible-use) page."
+   ]
+  },
+  {
+   "id": "built",
+   "heading": "Who builds it",
+   "paragraphs": [
+    "GoalGrid is built and run independently. Ideas, corrections and partnership enquiries are welcome through the [contact page](/contact)."
+   ]
+  }
+ ]
+}

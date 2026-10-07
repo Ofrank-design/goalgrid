@@ -1,0 +1,43 @@
+{
+ "slug": "contact",
+ "title": "Get in touch",
+ "eyebrow": "CONTACT",
+ "lead": "Questions, corrections, partnerships or bug reports. We read everything.",
+ "sections": [
+  {
+   "id": "message",
+   "heading": "Send a message",
+   "slot": "form"
+  },
+  {
+   "id": "other",
+   "heading": "Other ways to reach us",
+   "paragraphs": [
+    "Email [frankoduro1912@gmail.com](mailto:frankoduro1912@gmail.com), or find us on [X](https://x.com/odee_frank), [Instagram](https://instagram.com/_anonymoustroy), [LinkedIn](https://www.linkedin.com/in/ofrank-design/) and [GitHub](https://github.com/Ofrank-design)."
+   ]
+  },
+  {
+   "id": "include",
+   "heading": "What to include",
+   "bullets": [
+    "For a bug: the page, what you expected, what happened and your device or browser.",
+    "For a data correction: the match and what is wrong.",
+    "For an account or privacy request: write from the email address on your account so that we can verify it."
+   ]
+  },
+  {
+   "id": "replies",
+   "heading": "Reply times",
+   "paragraphs": [
+    "We usually reply within a few working days."
+   ]
+  },
+  {
+   "id": "safety",
+   "heading": "If you need support",
+   "paragraphs": [
+    "We are not a support service and cannot respond urgently. If gambling is a problem for you or someone you know, see our [responsible use](/responsible-use) page for organisations that can help."
+   ]
+  }
+ ]
+}

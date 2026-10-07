@@ -1,0 +1,482 @@
+{
+ "alaves": {
+  "short": "ALA",
+  "primary": "#0761AF",
+  "secondary": "#FFFFFF"
+ },
+ "angers": {
+  "short": "ANG",
+  "primary": "#000000",
+  "secondary": "#FFFFFF"
+ },
+ "arsenal": {
+  "short": "ARS",
+  "primary": "#EF0107",
+  "secondary": "#FFFFFF"
+ },
+ "astonvilla": {
+  "short": "AVL",
+  "primary": "#670E36",
+  "secondary": "#95BFE5"
+ },
+ "atalanta": {
+  "short": "ATA",
+  "primary": "#1E71B8",
+  "secondary": "#000000"
+ },
+ "athleticclub": {
+  "short": "ATH",
+  "primary": "#EE2523",
+  "secondary": "#FFFFFF"
+ },
+ "atleticomadrid": {
+  "short": "ATM",
+  "primary": "#CB3524",
+  "secondary": "#FFFFFF"
+ },
+ "augsburg": {
+  "short": "AUG",
+  "primary": "#BA3733",
+  "secondary": "#FFFFFF"
+ },
+ "auxerre": {
+  "short": "AUX",
+  "primary": "#FFFFFF",
+  "secondary": "#0057B8"
+ },
+ "barcelona": {
+  "short": "BAR",
+  "primary": "#A50044",
+  "secondary": "#004D98"
+ },
+ "bayern": {
+  "short": "BAY",
+  "primary": "#DC052D",
+  "secondary": "#FFFFFF"
+ },
+ "betis": {
+  "short": "BET",
+  "primary": "#0BB363",
+  "secondary": "#FFFFFF"
+ },
+ "bologna": {
+  "short": "BOL",
+  "primary": "#1A2F48",
+  "secondary": "#A21D2B"
+ },
+ "bournemouth": {
+  "short": "BOU",
+  "primary": "#DA291C",
+  "secondary": "#000000"
+ },
+ "brentford": {
+  "short": "BRE",
+  "primary": "#E30613",
+  "secondary": "#FFFFFF"
+ },
+ "brest": {
+  "short": "BST",
+  "primary": "#E2001A",
+  "secondary": "#FFFFFF"
+ },
+ "brighton": {
+  "short": "BHA",
+  "primary": "#0057B8",
+  "secondary": "#FFFFFF"
+ },
+ "burnley": {
+  "short": "BUR",
+  "primary": "#6C1D45",
+  "secondary": "#99D6EA"
+ },
+ "cagliari": {
+  "short": "CAG",
+  "primary": "#A5192E",
+  "secondary": "#0B2A5B"
+ },
+ "celta": {
+  "short": "CEL",
+  "primary": "#8AC3EE",
+  "secondary": "#FFFFFF"
+ },
+ "chelsea": {
+  "short": "CHE",
+  "primary": "#034694",
+  "secondary": "#FFFFFF"
+ },
+ "como": {
+  "short": "COM",
+  "primary": "#1B4F9C",
+  "secondary": "#FFFFFF"
+ },
+ "cremonese": {
+  "short": "CRE",
+  "primary": "#B1342F",
+  "secondary": "#7A7A7A"
+ },
+ "crystalpalace": {
+  "short": "CRY",
+  "primary": "#1B458F",
+  "secondary": "#C4122E"
+ },
+ "dortmund": {
+  "short": "BVB",
+  "primary": "#FDE100",
+  "secondary": "#000000"
+ },
+ "eintrachtfrankfurt": {
+  "short": "SGE",
+  "primary": "#E1000F",
+  "secondary": "#000000"
+ },
+ "elche": {
+  "short": "ELC",
+  "primary": "#FFFFFF",
+  "secondary": "#00843D"
+ },
+ "espanyol": {
+  "short": "ESP",
+  "primary": "#007FC8",
+  "secondary": "#FFFFFF"
+ },
+ "everton": {
+  "short": "EVE",
+  "primary": "#003399",
+  "secondary": "#FFFFFF"
+ },
+ "fiorentina": {
+  "short": "FIO",
+  "primary": "#5A2D81",
+  "secondary": "#FFFFFF"
+ },
+ "freiburg": {
+  "short": "SCF",
+  "primary": "#E2001A",
+  "secondary": "#000000"
+ },
+ "fulham": {
+  "short": "FUL",
+  "primary": "#FFFFFF",
+  "secondary": "#000000"
+ },
+ "genoa": {
+  "short": "GEN",
+  "primary": "#A21D2B",
+  "secondary": "#0B2A5B"
+ },
+ "getafe": {
+  "short": "GET",
+  "primary": "#005999",
+  "secondary": "#FFFFFF"
+ },
+ "girona": {
+  "short": "GIR",
+  "primary": "#CD2534",
+  "secondary": "#FFFFFF"
+ },
+ "gladbach": {
+  "short": "BMG",
+  "primary": "#FFFFFF",
+  "secondary": "#00A650"
+ },
+ "hamburg": {
+  "short": "HSV",
+  "primary": "#0A3A82",
+  "secondary": "#FFFFFF"
+ },
+ "havre": {
+  "short": "HAC",
+  "primary": "#6CA7DB",
+  "secondary": "#1B2A49"
+ },
+ "heidenheim": {
+  "short": "HDH",
+  "primary": "#E2001A",
+  "secondary": "#003F8A"
+ },
+ "hoffenheim": {
+  "short": "TSG",
+  "primary": "#1961B5",
+  "secondary": "#FFFFFF"
+ },
+ "inter": {
+  "short": "INT",
+  "primary": "#0068A8",
+  "secondary": "#000000"
+ },
+ "juventus": {
+  "short": "JUV",
+  "primary": "#FFFFFF",
+  "secondary": "#000000"
+ },
+ "koln": {
+  "short": "KOE",
+  "primary": "#FFFFFF",
+  "secondary": "#ED1C24"
+ },
+ "lazio": {
+  "short": "LAZ",
+  "primary": "#87D8F7",
+  "secondary": "#FFFFFF"
+ },
+ "lecce": {
+  "short": "LEC",
+  "primary": "#F5C400",
+  "secondary": "#D81E2E"
+ },
+ "leeds": {
+  "short": "LEE",
+  "primary": "#FFFFFF",
+  "secondary": "#1D428A"
+ },
+ "leipzig": {
+  "short": "RBL",
+  "primary": "#DD0741",
+  "secondary": "#FFFFFF"
+ },
+ "lens": {
+  "short": "RCL",
+  "primary": "#FFD400",
+  "secondary": "#D81E2E"
+ },
+ "levante": {
+  "short": "LEV",
+  "primary": "#A6192E",
+  "secondary": "#0033A0"
+ },
+ "leverkusen": {
+  "short": "B04",
+  "primary": "#E32221",
+  "secondary": "#000000"
+ },
+ "lille": {
+  "short": "LIL",
+  "primary": "#E01E13",
+  "secondary": "#1B2A49"
+ },
+ "liverpool": {
+  "short": "LIV",
+  "primary": "#C8102E",
+  "secondary": "#FFFFFF"
+ },
+ "lorient": {
+  "short": "LOR",
+  "primary": "#F58220",
+  "secondary": "#000000"
+ },
+ "lyon": {
+  "short": "LYO",
+  "primary": "#FFFFFF",
+  "secondary": "#1B3E8F"
+ },
+ "mainz": {
+  "short": "M05",
+  "primary": "#C3141E",
+  "secondary": "#FFFFFF"
+ },
+ "mallorca": {
+  "short": "MLL",
+  "primary": "#E20613",
+  "secondary": "#000000"
+ },
+ "manchestercity": {
+  "short": "MCI",
+  "primary": "#6CABDD",
+  "secondary": "#FFFFFF"
+ },
+ "manchesterunited": {
+  "short": "MUN",
+  "primary": "#DA291C",
+  "secondary": "#FBE122"
+ },
+ "marseille": {
+  "short": "MAR",
+  "primary": "#FFFFFF",
+  "secondary": "#2FAEE0"
+ },
+ "metz": {
+  "short": "MET",
+  "primary": "#6E0F2B",
+  "secondary": "#FFFFFF"
+ },
+ "milan": {
+  "short": "MIL",
+  "primary": "#FB090B",
+  "secondary": "#000000"
+ },
+ "monaco": {
+  "short": "MON",
+  "primary": "#E2001A",
+  "secondary": "#FFFFFF"
+ },
+ "nantes": {
+  "short": "NAN",
+  "primary": "#F5D000",
+  "secondary": "#00875A"
+ },
+ "napoli": {
+  "short": "NAP",
+  "primary": "#12A0D7",
+  "secondary": "#FFFFFF"
+ },
+ "newcastle": {
+  "short": "NEW",
+  "primary": "#FFFFFF",
+  "secondary": "#000000"
+ },
+ "nice": {
+  "short": "NIC",
+  "primary": "#D81E2E",
+  "secondary": "#000000"
+ },
+ "nottinghamforest": {
+  "short": "NFO",
+  "primary": "#DD0000",
+  "secondary": "#FFFFFF"
+ },
+ "osasuna": {
+  "short": "OSA",
+  "primary": "#D91A21",
+  "secondary": "#0A346F"
+ },
+ "oviedo": {
+  "short": "OVI",
+  "primary": "#1B3D7B",
+  "secondary": "#FFFFFF"
+ },
+ "parisfc": {
+  "short": "PFC",
+  "primary": "#1A4F9C",
+  "secondary": "#FFFFFF"
+ },
+ "parma": {
+  "short": "PAR",
+  "primary": "#FFFFFF",
+  "secondary": "#FCDC00"
+ },
+ "pauli": {
+  "short": "STP",
+  "primary": "#5C3A21",
+  "secondary": "#FFFFFF"
+ },
+ "pisa": {
+  "short": "PIS",
+  "primary": "#000000",
+  "secondary": "#0066CC"
+ },
+ "psg": {
+  "short": "PSG",
+  "primary": "#004170",
+  "secondary": "#DA291C"
+ },
+ "rayovallecano": {
+  "short": "RAY",
+  "primary": "#FFFFFF",
+  "secondary": "#E2001A"
+ },
+ "realmadrid": {
+  "short": "RMA",
+  "primary": "#FFFFFF",
+  "secondary": "#FEBE10"
+ },
+ "realsociedad": {
+  "short": "RSO",
+  "primary": "#0067B1",
+  "secondary": "#FFFFFF"
+ },
+ "rennais": {
+  "short": "REN",
+  "primary": "#E2001A",
+  "secondary": "#000000"
+ },
+ "roma": {
+  "short": "ROM",
+  "primary": "#8E1F2F",
+  "secondary": "#F0BC42"
+ },
+ "sassuolo": {
+  "short": "SAS",
+  "primary": "#00A650",
+  "secondary": "#000000"
+ },
+ "sevilla": {
+  "short": "SEV",
+  "primary": "#FFFFFF",
+  "secondary": "#D81E2E"
+ },
+ "strasbourg": {
+  "short": "STR",
+  "primary": "#0072CE",
+  "secondary": "#FFFFFF"
+ },
+ "stuttgart": {
+  "short": "VFB",
+  "primary": "#FFFFFF",
+  "secondary": "#E32219"
+ },
+ "sunderland": {
+  "short": "SUN",
+  "primary": "#EB172B",
+  "secondary": "#FFFFFF"
+ },
+ "torino": {
+  "short": "TOR",
+  "primary": "#8B1A1A",
+  "secondary": "#FFFFFF"
+ },
+ "tottenham": {
+  "short": "TOT",
+  "primary": "#FFFFFF",
+  "secondary": "#132257"
+ },
+ "toulouse": {
+  "short": "TFC",
+  "primary": "#6A2D91",
+  "secondary": "#FFFFFF"
+ },
+ "udinese": {
+  "short": "UDI",
+  "primary": "#000000",
+  "secondary": "#FFFFFF"
+ },
+ "unionberlin": {
+  "short": "FCU",
+  "primary": "#EB1923",
+  "secondary": "#FFFFFF"
+ },
+ "valencia": {
+  "short": "VAL",
+  "primary": "#FFFFFF",
+  "secondary": "#000000"
+ },
+ "verona": {
+  "short": "HEL",
+  "primary": "#FFE000",
+  "secondary": "#1B3E8F"
+ },
+ "villarreal": {
+  "short": "VIL",
+  "primary": "#FFE667",
+  "secondary": "#005187"
+ },
+ "werder": {
+  "short": "SVW",
+  "primary": "#1D9053",
+  "secondary": "#FFFFFF"
+ },
+ "westham": {
+  "short": "WHU",
+  "primary": "#7A263A",
+  "secondary": "#1BB1E7"
+ },
+ "wolfsburg": {
+  "short": "WOB",
+  "primary": "#65B32E",
+  "secondary": "#FFFFFF"
+ },
+ "wolverhampton": {
+  "short": "WOL",
+  "primary": "#FDB913",
+  "secondary": "#231F20"
+ }
+}

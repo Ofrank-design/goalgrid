@@ -1,0 +1,88 @@
+{
+ "slug": "methodology",
+ "title": "Methodology",
+ "eyebrow": "HOW IT WORKS",
+ "lead": "From raw data to one probability, step by step, and how we check ourselves.",
+ "sections": [
+  {
+   "id": "overview",
+   "heading": "Overview",
+   "paragraphs": [
+    "Every forecast goes through four stages: collect and check the data, run the models, let AI language models read the verified facts, and combine everything into one consensus. The result is a probability for a home win, a draw and an away win, plus expected goals, a likely score, both teams to score and over 2.5 goals."
+   ]
+  },
+  {
+   "id": "data",
+   "heading": "The data",
+   "paragraphs": [
+    "Fixtures and results come from Sportmonks, with football-data.org as a backup. Bookmaker prices come from The Odds API and OddsPapi, weather forecasts from Open-Meteo with OpenWeather as a backup, and headlines from The News API and SerpApi. Every record carries its source and an expiry time. Matches that fail basic checks are rejected, for example the same team on both sides, an impossible score or an invalid kickoff time."
+   ]
+  },
+  {
+   "id": "models",
+   "heading": "The models",
+   "paragraphs": [
+    "Dozens of models run on every match. They fall into groups:"
+   ],
+   "bullets": [
+    "Goal count models: Poisson, Dixon-Coles, Bivariate Poisson, Negative Binomial, Zero-Inflated, Hurdle, Generalized and Conway-Maxwell-Poisson, Skellam, dynamic versions, a home and away split and a rolling attack and defence index.",
+    "Bayesian models: a hierarchical Poisson, a bivariate Poisson, a zero-inflated Poisson and a Bayesian logistic regression, which average over uncertainty in team strength.",
+    "Rating models: Elo, Glicko-2, TrueSkill, Massey, Colley, PageRank, Bradley-Terry and expected points.",
+    "Machine learning: logistic regression, naive Bayes, random forest, extra trees, support vector machine, k-nearest neighbours, multinomial probit and gradient boosted trees.",
+    "Deep learning: a feedforward network, a TabNet-style network, a temporal convolutional network, an LSTM and a Transformer over each team's recent form.",
+    "Context models: rest and congestion, weather, player availability, lineups, tactical matchups and news.",
+    "Market consensus: bookmaker prices turned into probabilities."
+   ],
+   "note": "The boosted tree models (in the style of CatBoost, LightGBM and XGBoost) and the deep learning models are our own implementations of those methods, not the vendor libraries."
+  },
+  {
+   "id": "testing",
+   "heading": "Testing and weighting",
+   "paragraphs": [
+    "Each model is fitted on the oldest 80 percent of the last two seasons of results and scored on the newest 20 percent, which it has not seen. The score is log loss, which punishes confident wrong forecasts. A model's weight falls as its log loss rises. Every family of models is damped so that a large family cannot drown out the others, and models that cannot be tested, such as the market and fixed prior adjustments, are capped at half the average weight."
+   ]
+  },
+  {
+   "id": "waiting",
+   "heading": "Models that wait for data",
+   "paragraphs": [
+    "Some models need data we do not have yet: expected goals, injuries and suspensions, confirmed lineups, tactical statistics and structured news signals. Until those feeds exist these models sit out, and each match page lists exactly which models took part and which did not. We would rather show a smaller number of real forecasts than invent inputs."
+   ]
+  },
+  {
+   "id": "consensus",
+   "heading": "From many models to one number",
+   "paragraphs": [
+    "The consensus is a weighted average of the models that took part. Expected goals, the likely score, both teams to score and over 2.5 goals come from averaging the models' score grids with the same weights."
+   ]
+  },
+  {
+   "id": "confidence",
+   "heading": "What the confidence score means",
+   "paragraphs": [
+    "The confidence score runs from 0 to 100. It combines how closely the models agree (65 percent) with how much history exists for the less experienced of the two teams (35 percent). It measures how settled the forecast is. It is not the chance that the forecast is right."
+   ]
+  },
+  {
+   "id": "market-ai",
+   "heading": "The market and the AI layer",
+   "paragraphs": [
+    "Bookmaker prices are converted into probabilities after removing the bookmaker's margin, and are shown as a separate signal. AI language models read a numbered list of verified facts and nothing else. Their replies are checked against a strict format, every reason must cite a fact from the list, and an answer far from the statistical consensus is set aside. The final blend lets the language models move the forecast by at most 25 percent. News headlines are treated as untrusted text."
+   ]
+  },
+  {
+   "id": "checking",
+   "heading": "How we check ourselves",
+   "paragraphs": [
+    "Every prediction is stored before kickoff and cannot be changed afterwards. After the match it is scored for accuracy, log loss, Brier score and calibration. Log loss for guessing one in three is 1.099, so anything lower than that is skill. The results are public on the [accuracy page](/accuracy), including the matches we got wrong."
+   ]
+  },
+  {
+   "id": "limits",
+   "heading": "Limits",
+   "paragraphs": [
+    "Early in a season there is little history. Newly promoted teams have none from the top flight. Football has a lot of luck in it, so a team given a 70 percent chance still fails to win three times in ten. Without injury and lineup feeds, late team news is not reflected unless it appears in the headlines."
+   ]
+  }
+ ]
+}

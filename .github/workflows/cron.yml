@@ -1,0 +1,21 @@
+# Optional: more frequent refreshes while staying on Vercel Hobby, whose own cron can only run once a day.
+# Setup: repository Settings > Secrets and variables > Actions. Add the variable SITE_URL (https://your-domain, no trailing slash) and the secret CRON_SECRET (the same value as in Vercel).
+# Without SITE_URL this workflow does nothing. GitHub may delay scheduled runs, and pauses them after 60 days without repository activity.
+name: Frequent refresh
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+jobs:
+  refresh:
+    if: ${{ vars.SITE_URL != '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Refresh predictions and deliver notifications
+        env:
+          SITE_URL: ${{ vars.SITE_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          for job in refresh notifications; do
+            curl --fail --silent --show-error --max-time 70 -H "Authorization: Bearer $CRON_SECRET" "$SITE_URL/api/cron/jobs?job=$job" > /dev/null
+          done

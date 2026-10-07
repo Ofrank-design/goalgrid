@@ -1,0 +1,80 @@
+{
+ "slug": "responsible-use",
+ "title": "Responsible use",
+ "eyebrow": "RESPONSIBLE USE",
+ "lead": "Football is unpredictable. Our numbers are probabilities, not promises.",
+ "sections": [
+  {
+   "id": "predictions",
+   "heading": "What our predictions are",
+   "paragraphs": [
+    "GoalGrid estimates how likely each result is. Estimates can be wrong, and favourites lose often. A prediction is a way to understand a match, not a way to know its result."
+   ]
+  },
+  {
+   "id": "advice",
+   "heading": "GoalGrid is not betting advice",
+   "paragraphs": [
+    "We do not take bets, handle money on matches or recommend bets. Bookmaker odds appear on GoalGrid as information about what the market thinks. They are not an invitation to place a bet."
+   ]
+  },
+  {
+   "id": "betting",
+   "heading": "If you choose to bet",
+   "bullets": [
+    "Only stake money you can afford to lose.",
+    "Set a limit before you start and keep to it.",
+    "Never chase losses.",
+    "Do not bet to solve money problems.",
+    "Take regular breaks and do not bet when tired, upset or drinking.",
+    "Betting is for adults only, and it is not legal everywhere. Follow the law where you live."
+   ]
+  },
+  {
+   "id": "signs",
+   "heading": "Warning signs",
+   "bullets": [
+    "Spending more time or money than you intended.",
+    "Hiding your betting from people close to you.",
+    "Borrowing money to bet.",
+    "Feeling anxious or irritable when you are not betting.",
+    "Betting to win back what you have lost."
+   ]
+  },
+  {
+   "id": "help",
+   "heading": "Where to get help",
+   "paragraphs": [
+    "These organisations are independent of GoalGrid and offer free, confidential support:"
+   ],
+   "bullets": [
+    "[BeGambleAware](https://www.begambleaware.org) for support in the United Kingdom.",
+    "[GamCare](https://www.gamcare.org.uk) for the National Gambling Helpline and online chat in the United Kingdom.",
+    "[Gamblers Anonymous](https://www.gamblersanonymous.org) for peer support groups.",
+    "[National Council on Problem Gambling](https://www.ncpgambling.org) for help in the United States."
+   ],
+   "note": "If you are in another country, search for your national gambling helpline."
+  },
+  {
+   "id": "community",
+   "heading": "Our community",
+   "paragraphs": [
+    "Prediction challenges are played for points only. There is no money, no stakes and no prizes of value. Posts that promote gambling offers or tipsters are removed."
+   ]
+  },
+  {
+   "id": "age",
+   "heading": "Age",
+   "paragraphs": [
+    "GoalGrid is for people aged 18 or over, or the age of majority where you live."
+   ]
+  },
+  {
+   "id": "tell",
+   "heading": "Tell us",
+   "paragraphs": [
+    "If you see something on GoalGrid that encourages irresponsible gambling, [contact us](/contact) and we will review it."
+   ]
+  }
+ ]
+}

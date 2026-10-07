@@ -1,0 +1,114 @@
+{
+ "slug": "privacy",
+ "title": "Privacy policy",
+ "eyebrow": "PRIVACY",
+ "lead": "What we collect, why, who helps us process it, and the choices you have.",
+ "sections": [
+  {
+   "id": "who",
+   "heading": "Who we are",
+   "paragraphs": [
+    "GoalGrid (\"we\", \"us\") runs this website and app. You can reach us about anything in this policy through the [contact page](/contact)."
+   ]
+  },
+  {
+   "id": "collect",
+   "heading": "What we collect",
+   "bullets": [
+    "Account: your email address, your password (held in hashed form by our authentication provider, so we never see it) and the username you choose.",
+    "Community: posts, replies, likes and reports you make, and the predictions you submit with the points they earn.",
+    
+    "Email: your address if you subscribe or opt in, whether you confirmed, and a log of the emails we send to you.",
+    "Contact form: the name, email address and message you send.",
+    "Technical data: your IP address and request logs held by our hosting and security systems, used for rate limiting and abuse prevention, and a session cookie that keeps you signed in."
+   ]
+  },
+  {
+   "id": "not-collect",
+   "heading": "What we do not collect",
+   "paragraphs": [
+    "We do not use advertising trackers or third party analytics, and we do not sell personal data. GoalGrid does not take payments, so we hold no payment card details."
+   ]
+  },
+  {
+   "id": "why",
+   "heading": "Why we use it",
+   "bullets": [
+    "To provide the service you asked for: your account, posts and predictions.",
+    "To keep the service secure and fair, for example by limiting repeated attempts and removing abuse. This is our legitimate interest.",
+    "To send emails you asked for. This relies on your consent, and you can withdraw it at any time.",
+    "To meet legal obligations."
+   ]
+  },
+  {
+   "id": "cookies",
+   "heading": "Cookies",
+   "paragraphs": [
+    "We use only cookies that are strictly necessary: the session cookies from our authentication provider that keep you signed in. Because we use no other cookies, there is no cookie banner."
+   ]
+  },
+  {
+   "id": "processors",
+   "heading": "Who processes data for us",
+   "paragraphs": [
+    "We use these providers to run GoalGrid:"
+   ],
+   "bullets": [
+    "Supabase for authentication and our database.",
+    "Resend to deliver email.",
+    "Our hosting provider, which serves the site.",
+    "Football, odds, weather and news data providers. They receive match and team queries, never personal data.",
+    "AI language model providers (Anthropic, Groq, OpenRouter, Google and NVIDIA). They receive match facts and public headlines only, never personal data."
+   ]
+  },
+  {
+   "id": "transfers",
+   "heading": "International transfers",
+   "paragraphs": [
+    "Our providers may process data in other countries. Where data crosses borders we rely on the safeguards our providers offer, such as standard contractual clauses."
+   ]
+  },
+  {
+   "id": "retention",
+   "heading": "How long we keep it",
+   "paragraphs": [
+    "We keep account data while your account is open. Posts stay until you delete them or a moderator removes them. When you ask us to delete your account we delete or anonymise your personal data, except for what we must keep for legal or security reasons. Email and security logs are kept for as long as needed to run and protect the service."
+   ]
+  },
+  {
+   "id": "public",
+   "heading": "What other people can see",
+   "paragraphs": [
+    "Your username, posts, replies and leaderboard points are visible to anyone who visits GoalGrid. Please do not post personal information."
+   ]
+  },
+  {
+   "id": "rights",
+   "heading": "Your rights",
+   "paragraphs": [
+    "Depending on where you live, you can ask to access, correct, export or delete your personal data, object to how we use it, or withdraw your consent. Every email we send has an unsubscribe link. To use any other right, [contact us](/contact) from the email address on your account so that we can verify it is you. We aim to answer within one month, and you can complain to your local data protection authority."
+   ]
+  },
+  {
+   "id": "children",
+   "heading": "Children",
+   "paragraphs": [
+    "GoalGrid is not for anyone under 18. We do not knowingly collect data from children, and we delete it if we learn that we have."
+   ]
+  },
+  {
+   "id": "security",
+   "heading": "Security",
+   "paragraphs": [
+    "We use encrypted connections, hashed passwords, row level security in our database and server side checks on every request, and we keep API keys on the server. No system is perfectly secure, so please use a strong, unique password."
+   ]
+  },
+  {
+   "id": "changes",
+   "heading": "Changes to this policy",
+   "paragraphs": [
+    "When we change this policy we update the date at the top of the page, and we will tell you about significant changes."
+   ]
+  }
+ ]
+}
