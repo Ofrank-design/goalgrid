@@ -11,7 +11,9 @@ export const coverage = (p: PlanProvider): string[] => { const k = KEY[p.id]; re
  *   - nothing has come back yet (every earlier source errored or returned an empty list), or
  *   - it covers a competition that no earlier source that answered can serve (API-Football and the Danish league, say).
  */
-export function selectProviders<T extends PlanProvider>(tier: readonly T[], answered: readonly PlanProvider[], haveMatches: boolean): T[] {
-  const have = new Set(answered.flatMap(coverage));
+export function selectProviders<T extends PlanProvider>(tier: readonly T[], answered: readonly PlanProvider[], haveMatches: boolean, leaguesWithMatches?: ReadonlySet<string>): T[] {
+  // Gap fill: when the caller says which leagues already have matches, a provider is asked whenever it covers a league that has none yet,
+  // so a league an earlier provider answered "empty" or dropped is still tried on the later tiers. Without it, claimed coverage decides.
+  const have = leaguesWithMatches ?? new Set(answered.flatMap(coverage));
   return tier.filter((p) => p.configured() && (!haveMatches || coverage(p).some((s) => !have.has(s))));
 }

@@ -38,11 +38,13 @@ async function dayMatches(slug: LeagueSlug, date: string): Promise<Match[]> {
 const SLUGS = LEAGUE_REGISTRY.flatMap(l => ("bb" in l ? [l.slug as LeagueSlug] : []));
 
 /** Fixtures in one unified schema for the five big leagues. Works alone. */
-export const bigBalls: ProviderAdapter<Match[], { date: string }> & { configured(): boolean } = {
+export const bigBalls: ProviderAdapter<Match[], { date: string; leagues?: readonly string[] }> & { configured(): boolean } = {
   id: "big-balls",
   configured: () => Boolean(env().BIG_BALLS_API_KEY),
-  async fetch({ date }) {
-    const t0 = Date.now(), r = await Promise.allSettled(SLUGS.map(s => dayMatches(s, date)));
+  async fetch({ date, leagues }) {
+    const t0 = Date.now(), want = SLUGS.filter(s => !leagues || leagues.includes(s));
+    if (!want.length) return { data: [], meta: { provider: "big-balls", fetchedAt: new Date().toISOString(), cached: false, latencyMs: 0 } };
+    const r = await Promise.allSettled(want.map(s => dayMatches(s, date)));
     if (r.every(x => x.status === "rejected")) throw (r[0] as PromiseRejectedResult).reason;
     return { data: r.flatMap(x => (x.status === "fulfilled" ? x.value : [])), meta: { provider: "big-balls", fetchedAt: new Date().toISOString(), cached: false, latencyMs: Date.now() - t0 } };
   },

@@ -46,12 +46,13 @@ async function leagueId(slug: LeagueSlug): Promise<string | null> {
 const SLUGS = LEAGUE_REGISTRY.flatMap(l => ("ga" in l ? [l.slug as LeagueSlug] : []));
 
 /** Fixtures by date, one request per league. Used as a later fallback in the fixtures chain. */
-export const goalApi: ProviderAdapter<Match[], { date: string }> & { configured(): boolean } = {
+export const goalApi: ProviderAdapter<Match[], { date: string; leagues?: readonly string[] }> & { configured(): boolean } = {
   id: "goal-api",
   configured: () => Boolean(env().GOAL_API_KEY),
-  async fetch({ date }) {
-    const t0 = Date.now();
-    const r = await Promise.allSettled(SLUGS.map(async slug => { const id = await leagueId(slug); if (!id) return []; const { value } = await cached(`goal:fixtures:${slug}:${date}`, 20 * MIN, 3 * H, async () => rows(await call(`/fixtures/date/${date}`, { leagueId: id, limit: "100" }))); return normalizeGoalFixtures(value, slug); }));
+  async fetch({ date, leagues }) {
+    const t0 = Date.now(), want = SLUGS.filter(s => !leagues || leagues.includes(s));
+    if (!want.length) return { data: [], meta: { provider: "goal-api", fetchedAt: new Date().toISOString(), cached: false, latencyMs: 0 } };
+    const r = await Promise.allSettled(want.map(async slug => { const id = await leagueId(slug); if (!id) return []; const { value } = await cached(`goal:fixtures:${slug}:${date}`, 20 * MIN, 3 * H, async () => rows(await call(`/fixtures/date/${date}`, { leagueId: id, limit: "100" }))); return normalizeGoalFixtures(value, slug); }));
     if (r.every(x => x.status === "rejected")) throw (r[0] as PromiseRejectedResult).reason;
     return { data: r.flatMap(x => (x.status === "fulfilled" ? x.value : [])), meta: { provider: "goal-api", fetchedAt: new Date().toISOString(), cached: false, latencyMs: Date.now() - t0 } };
   },

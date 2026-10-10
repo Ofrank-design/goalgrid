@@ -12,14 +12,15 @@ import { bigBalls } from "@/lib/providers/big-balls";
 import { theStatsApi } from "@/lib/providers/thestatsapi";
 import { goalApi } from "@/lib/providers/goal-api";
 import { sameTeam } from "@/lib/football/team-resolver";
+import { LEAGUE_REGISTRY } from "@/lib/football/league-registry";
 import { selectProviders } from "./fixture-plan";
 import type { Match, Source } from "@/types/football";
 
-interface FixtureProvider { id: ProviderId; configured(): boolean; fetch(q: { date: string }): Promise<{ data: Match[]; meta: { latencyMs: number } }> }
+interface FixtureProvider { id: ProviderId; configured(): boolean; fetch(q: { date: string; leagues?: readonly string[] }): Promise<{ data: Match[]; meta: { latencyMs: number } }> }
 
 /**
  * The priority route. Within a tier the providers run side by side; a later tier is asked only when an earlier one came back empty or
- * failed, or when it covers a competition the earlier ones cannot (see selectProviders). When two providers list the same match, the earlier one's record is kept.
+ * failed, or when it covers a competition that has no matches yet (see selectProviders). Later tiers are only asked for the leagues still missing. When two providers list the same match, the earlier one's record is kept.
  */
 const TIERS: FixtureProvider[][] = [[footballData, sportmonks], [bigBalls, theStatsApi], [apiFootball, goalApi]];
 
@@ -49,12 +50,13 @@ async function loadFixtures(
   const answered: FixtureProvider[] = [], matches: Match[] = [];
 
   for (const tier of TIERS) {
-    const todo = selectProviders(tier, answered, matches.length > 0);
+    const have = new Set<string>(matches.map((m) => m.league.slug)), missing = LEAGUE_REGISTRY.map((l) => l.slug as string).filter((s) => !have.has(s));
+    const todo = selectProviders(tier, answered, matches.length > 0, have);
     for (const p of tier) if (p.configured() && !todo.includes(p)) attempts.push({ provider: p.id, ok: true, count: 0, skipped: true });
     const settled = await Promise.all(
       todo.map(async (provider) => {
         try {
-          const { data, meta } = await provider.fetch({ date });
+          const { data, meta } = await provider.fetch({ date, leagues: missing });
           void recordHealth(provider.id, true, meta.latencyMs);
           const valid = data.filter((match) => {
             const issues = validateMatch(match);
