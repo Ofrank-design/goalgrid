@@ -1,7 +1,8 @@
 import type { LeagueSlug, Match, MatchStatus } from "../../../types/football";
 import { teamSlug } from "../../engine/normalization/teams";
-/** Sportmonks league ids. Confirm these against your plan's coverage before relying on them. */
-export const SM_LEAGUES: Record<number, { slug: LeagueSlug; name: string }> = { 8: { slug: "premier-league", name: "Premier League" }, 564: { slug: "la-liga", name: "LaLiga" }, 384: { slug: "serie-a", name: "Serie A" }, 82: { slug: "bundesliga", name: "Bundesliga" }, 301: { slug: "ligue-1", name: "Ligue 1" } };
+import { LEAGUE_REGISTRY } from "../../football/league-registry";
+/** Sportmonks league ids, from the league registry. A plan only returns the leagues it covers. */
+export const SM_LEAGUES: Record<number, { slug: LeagueSlug; name: string }> = Object.fromEntries(LEAGUE_REGISTRY.flatMap((l) => ("sm" in l ? [[l.sm, { slug: l.slug, name: l.name }]] : [])));
 const LIVE = new Set(["INPLAY_1ST_HALF", "INPLAY_2ND_HALF", "HT", "BREAK", "INPLAY_ET", "INPLAY_PENALTIES", "LIVE", "1H", "2H", "ET"]);
 const stateOf = (s?: string): MatchStatus => !s ? "unknown" : s === "NS" || s === "TBA" ? "scheduled" : LIVE.has(s) ? "live" : ["FT", "AET", "FT_PEN"].includes(s) ? "finished" : s === "POSTPONED" || s === "POSTP" ? "postponed" : s === "CANCELLED" || s === "CANC" ? "cancelled" : "unknown";
 interface SmPart { id: number; name: string; short_code?: string | null; image_path?: string | null; meta?: { location?: string } }

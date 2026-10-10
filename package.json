@@ -14,7 +14,8 @@
     "loadtest": "tsx scripts/loadtest.ts",
     "backtest": "tsx scripts/backtest.ts",
     "test:db": "bash supabase/tests/run.sh",
-    "smoke": "tsx scripts/smoke.ts"
+    "smoke": "tsx scripts/smoke.ts",
+    "probe": "node --env-file=.env.local --import tsx scripts/probe-providers.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.5.2",

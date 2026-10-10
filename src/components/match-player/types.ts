@@ -24,5 +24,8 @@ export type MatchPlayerProps = {
   sim: MatchSim & Extra;
   homeSlug: string;
   awaySlug: string;
+  /** The provider's crest images, when known. Without them the team shows a colour disc. */
+  homeCrest?: string | null;
+  awayCrest?: string | null;
   autoplay?: boolean;
 };

@@ -1,10 +1,11 @@
+import { LEAGUE_SLUGS } from "@/lib/football/league-registry";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getLeagueModels } from "@/lib/engine/predictions";
 import { currentTier, hasTier } from "@/lib/entitlements";
 import { log } from "@/lib/logging/logger";
 export const maxDuration = 60;
-const q = z.object({ league: z.enum(["premier-league", "la-liga", "serie-a", "bundesliga", "ligue-1"]) });
+const q = z.object({ league: z.enum(LEAGUE_SLUGS) });
 /** GET /api/models?league=premier-league. The model library with measured status, held out log loss and weights. Signed-in users only. */
 export async function GET(req: Request) {
   const p = q.safeParse({ league: new URL(req.url).searchParams.get("league") });

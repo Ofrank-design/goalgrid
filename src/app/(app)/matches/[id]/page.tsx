@@ -18,9 +18,9 @@ export default async function MatchPage({ params, searchParams }: { params: Prom
   return (<>
     <div className="row"><p className="note"><Link href={`/dashboard?date=${date}`} style={{ color: "#00e676" }}>Back to the dashboard</Link></p><div className="chips"><SaveMatchButton matchId={m.id} matchDate={date} /><Link className="chip" href={`/community/matches/${encodeURIComponent(m.id)}?date=${date}`}>Discussion</Link></div></div>
     <div className="card" style={{ marginTop: 12 }}><div className="lh"><span>{m.league.name}{m.matchday ? `, matchday ${m.matchday}` : ""}</span><span style={{ marginLeft: "auto" }}>{date}, {kickoffLabel(m.kickoffUtc)}</span></div>
-      <div className="teams"><div className="t"><Crest slug={m.home.slug} url={crests ? m.home.crestUrl : null} name={m.home.name} />{m.home.name}</div>
+      <div className="teams"><div className="t"><Crest url={crests ? m.home.crestUrl : null} name={m.home.name} />{m.home.name}</div>
         <div className="score">{m.status === "finished" ? `${m.score.home} - ${m.score.away}` : p ? `${p.mostLikelyScore.home} - ${p.mostLikelyScore.away}` : "vs"}<small>{m.status === "finished" ? "Final score" : "Predicted score"}</small></div>
-        <div className="t"><Crest slug={m.away.slug} url={crests ? m.away.crestUrl : null} name={m.away.name} />{m.away.name}</div></div>
+        <div className="t"><Crest url={crests ? m.away.crestUrl : null} name={m.away.name} />{m.away.name}</div></div>
       {p ? <><div className="pb" aria-hidden="true"><i style={{ flex: p.probabilities.home, background: "#00e676" }} /><i style={{ flex: p.probabilities.draw, background: "#456068" }} /><i style={{ flex: p.probabilities.away, background: "#35d4ee" }} /></div>
         <div className="pl"><div><b>{pct(p.probabilities.home)}</b>Home win</div><div><b>{pct(p.probabilities.draw)}</b>Draw</div><div><b>{pct(p.probabilities.away)}</b>Away win</div></div>
         <div className="meta"><span>Expected goals {p.expectedGoals.home} to {p.expectedGoals.away}</span><span>Both score {pct(p.btts)}, over 2.5 {pct(p.over25)}</span></div>

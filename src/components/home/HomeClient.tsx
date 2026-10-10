@@ -118,15 +118,6 @@ function percentages(p: { home: number; draw: number; away: number }): [number, 
 }
 
 async function loadLiveViews(signal: AbortSignal): Promise<MatchView[] | null> {
-  let manifest: Record<string, string> = {};
-  try {
-    const mr = await fetch("/crests/manifest.json");
-    if (mr.ok) manifest = await mr.json();
-  } catch {
-    /* local crests are optional */
-  }
-  const local = (slug: string) => (manifest[slug] ? `/crests/${manifest[slug]}.webp` : null);
-
   const r = await fetch(`/api/predictions?date=${new Date().toISOString().slice(0, 10)}`, {
     signal,
     headers: { Accept: "application/json" },
@@ -166,8 +157,8 @@ async function loadLiveViews(signal: AbortSignal): Promise<MatchView[] | null> {
       ac: (m.away.shortName || m.away.name).slice(0, 3),
       hb: "background:#2a3a4a",
       ab: "background:#2a3a4a",
-      hu: local(m.home.slug) || m.home.crestUrl,
-      au: local(m.away.slug) || m.away.crestUrl,
+      hu: m.home.crestUrl,
+      au: m.away.crestUrl,
       when:
         (today ? "Today" : d.toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" })) +
         ", " +
@@ -293,7 +284,7 @@ export function SearchButton() {
 
 interface SearchPayload {
   leagues: { slug: string; name: string; country: string }[];
-  teams: { slug: string; name: string; league: string }[];
+  teams: { slug: string; name: string; league: string; leagueSlug?: string }[];
   players: { id: string | number; name: string; position?: string; teamName?: string; nationality?: string }[];
   community: { id: string | number; username: string; excerpt: string }[];
 }
@@ -372,7 +363,7 @@ export function SearchOverlay() {
           <Link key={x.slug} href={`/leagues/${encodeURIComponent(x.slug)}`}><strong>{x.name}</strong><span>{x.country}</span></Link>
         )} />
         <SearchGroup title="Teams" items={teams} render={(x) => (
-          <Link key={x.slug} href={`/teams/${encodeURIComponent(x.slug)}`}><strong>{x.name}</strong><span>{x.league}</span></Link>
+          <Link key={x.slug} href={`/teams/${encodeURIComponent(x.slug)}${x.leagueSlug ? `?league=${encodeURIComponent(x.leagueSlug)}` : ""}`}><strong>{x.name}</strong><span>{x.league}</span></Link>
         )} />
         <SearchGroup title="Players" items={players} render={(x) => (
           <Link key={x.id} href={`/players/${encodeURIComponent(x.id)}`}>

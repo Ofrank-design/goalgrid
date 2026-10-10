@@ -1,5 +1,6 @@
-export type Source = "sportmonks" | "football-data";
-export type LeagueSlug = "premier-league" | "la-liga" | "serie-a" | "bundesliga" | "ligue-1";
+export type Source = "sportmonks" | "football-data" | "api-football" | "thestatsapi" | "goal-api" | "big-balls";
+export type { LeagueSlug } from "@/lib/football/league-registry";
+import type { LeagueSlug } from "@/lib/football/league-registry";
 export type MatchStatus = "scheduled" | "live" | "finished" | "postponed" | "cancelled" | "unknown";
 /** Keep the source and freshness alongside each record so stale data is visible. */
 export interface Provenance { source: Source; retrievedAt: string; sourceTimestamp: string | null; expiresAt: string }

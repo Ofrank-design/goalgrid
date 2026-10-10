@@ -1,11 +1,16 @@
 import teamsJson from "../../content/teams-visual.json";
-import { clubBySlug } from "../football/clubs";
+import { jaroWinkler } from "../football/team-resolver";
 import { hashSeed, makeRng } from "./rng";
 import type { MatchSim, SimEvent } from "./match";
 /** The visual layer. It reads the events the engine produced and decides how to draw them. It never changes a score, a statistic or a probability. Formations, build-up passes and shirt numbers here are illustrative: GoalGrid has no lineup or player data, so no player names are ever shown. */
 export interface Pt { x: number; y: number }
 export interface TeamVisual { slug: string; name: string; shortName: string; primary: string; secondary: string; crest: string | null }
 const DATA = teamsJson as Record<string, { short: string; primary: string; secondary: string }>;
+const squash = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
+const DATA_KEYS = Object.keys(DATA);
+const inOrder = (short: string, long: string) => { let i = 0; for (const ch of long) if (ch === short[i]) i++; return i === short.length; };
+/** The kit-colour row for a team slug: exact, or the closest key when a provider spells the club differently. */
+function kitKey(slug: string): string | undefined { const q = squash(slug); if (DATA[q]) return q; let best: string | undefined, top = 0; for (const k of DATA_KEYS) { const sc = k.startsWith(q) || q.startsWith(k) || (q.length >= 6 && q.slice(0, 3) === k.slice(0, 3) && inOrder(q, k)) ? 0.95 : jaroWinkler(q, k); if (sc > top) { top = sc; best = k; } } return top >= 0.94 ? best : undefined; }
 const hex = (h: string) => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
 export const luminance = (h: string) => { const [r, g, b] = hex(h).map(v => { const c = v / 255; return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; }); return 0.2126 * r + 0.7152 * g + 0.0722 * b; };
 export const textOn = (bg: string) => (luminance(bg) > 0.45 ? "#0b0f1a" : "#ffffff");
@@ -13,8 +18,8 @@ export const colourDistance = (a: string, b: string) => { const A = hex(a), B = 
 const nice = (s: string) => s.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
 /** Colours, short name and crest come from data, never from the match. A team missing from the data gets a stable colour derived from its slug. */
 export function teamVisual(slug: string): TeamVisual {
-  const club = clubBySlug(slug), d = club ? DATA[club.key] : undefined;
-  if (club && d) return { slug, name: club.name, shortName: d.short, primary: d.primary, secondary: d.secondary, crest: `/crests/${club.key}.webp` };
+  const key = kitKey(slug), d = key ? DATA[key] : undefined;
+  if (d) return { slug, name: nice(slug), shortName: d.short, primary: d.primary, secondary: d.secondary, crest: null };
   const h = hashSeed(slug), hue = h % 360, hsl = (hh: number, l: number) => { const a = 0.6 * Math.min(l, 1 - l), f = (n: number) => { const k = (n + hh / 30) % 12, c = l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1)); return Math.round(255 * c).toString(16).padStart(2, "0"); }; return `#${f(0)}${f(8)}${f(4)}`; };
   return { slug, name: nice(slug), shortName: slug.replace(/[^a-z]/g, "").slice(0, 3).toUpperCase() || "TEA", primary: hsl(hue, 0.42), secondary: "#ffffff", crest: null };
 }

@@ -1,10 +1,5 @@
-export const LEAGUES: [string, string][] = [
-  ["premier-league", "Premier League"],
-  ["la-liga", "La Liga"],
-  ["serie-a", "Serie A"],
-  ["bundesliga", "Bundesliga"],
-  ["ligue-1", "Ligue 1"],
-];
+import { LEAGUE_REGISTRY } from "@/lib/football/league-registry";
+export const LEAGUES: [string, string][] = LEAGUE_REGISTRY.filter((l) => l.kind === "league").map((l) => [l.slug, l.name]);
 
 export const formatLabel = (value: string) =>
   value

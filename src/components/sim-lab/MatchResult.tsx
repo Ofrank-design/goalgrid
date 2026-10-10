@@ -5,6 +5,8 @@ import type { SimLabView } from "./useSimLab";
 
 export function MatchResult({ v, simulation }: { v: SimLabView, simulation: SimRun }) {
   const { premium, initial, home, away, busy, playedRuns, runSimulation } = v;
+  const homeSlug = initial && simulation === initial.sim ? initial.home : home;
+  const awaySlug = initial && simulation === initial.sim ? initial.away : away;
   return (
     <>
     <div className="card" style={{ display: "grid", gap: 6 }}>
@@ -81,12 +83,10 @@ export function MatchResult({ v, simulation }: { v: SimLabView, simulation: SimR
     <MatchPlayer
       key={`${simulation.id ?? simulation.seed}:${playedRuns}`}
       sim={{ ...simulation, baseline: simulation.baseline }}
-      homeSlug={
-        initial && simulation === initial.sim ? initial.home : home
-      }
-      awaySlug={
-        initial && simulation === initial.sim ? initial.away : away
-      }
+      homeSlug={homeSlug}
+      awaySlug={awaySlug}
+      homeCrest={v.crests[homeSlug]}
+      awayCrest={v.crests[awaySlug]}
     />
     </>
   );

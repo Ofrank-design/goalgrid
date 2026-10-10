@@ -1,19 +1,14 @@
+import { leagueEntry } from "../src/lib/football/league-registry";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
-import { CLUBS, LEAGUES, clubBySlug, clubsOf, sameClub, searchClubs, searchLeagues } from "../src/lib/football/clubs";
+import { LEAGUES, searchLeagues } from "../src/lib/football/clubs";
 import { computeTable, seasonStart, teamSummary } from "../src/lib/football/table";
 const m = (date: string, home: string, away: string, hg: number, ag: number) => ({ date, home, away, hg, ag });
-test("club directory is complete and consistent", () => {
-  assert.equal(CLUBS.length, 96); assert.equal(new Set(CLUBS.map(c => c.slug)).size, 96); for (const l of LEAGUES) assert.ok(clubsOf(l.slug).length >= 18, l.slug);
-  for (const c of CLUBS) { assert.ok(existsSync(join(process.cwd(), "public/crests", c.key + ".webp")), c.key); assert.equal(clubBySlug(c.slug)?.key, c.key); }
-  for (const l of LEAGUES) assert.ok(existsSync(join(process.cwd(), "public/leagues", l.slug + ".webp")), l.slug);
-});
-test("provider spellings resolve to one club", () => { assert.ok(sameClub("man-city", "man-city")); assert.equal(clubBySlug("spurs")?.name, "Tottenham Hotspur"); assert.equal(clubBySlug("tottenham")?.slug, "tottenham-hotspur"); assert.equal(clubBySlug("brighton")?.slug, clubBySlug("brighton-hove-albion")?.slug); assert.equal(clubBySlug("nobody-fc"), undefined); assert.ok(!sameClub("arsenal", "chelsea")); });
-test("search ignores case and accents and ranks prefixes first", () => {
-  assert.equal(searchClubs("ATLETICO")[0].name, "Atlético Madrid"); assert.ok(searchClubs("city").some(c => c.name === "Manchester City")); assert.equal(searchClubs("a").length, 0); assert.equal(searchClubs("zzzz").length, 0);
-  assert.equal(searchClubs("man")[0].name.startsWith("Man"), true); assert.deepEqual(searchLeagues("eng").map(l => l.slug), ["premier-league"]); assert.deepEqual(searchLeagues("liga").map(l => l.slug).sort(), ["bundesliga", "la-liga"]);
+test("league search ignores case and accents", () => {
+  assert.deepEqual(searchLeagues("eng").map(l => l.slug).sort(), ["championship", "premier-league"]); assert.deepEqual(searchLeagues("liga").map(l => l.slug).sort(), ["bundesliga", "danish-superliga", "la-liga", "primeira-liga"]); assert.equal(searchLeagues("a").length, 0); assert.ok(searchLeagues("BRASIL").length === 1);
+  for (const l of LEAGUES.filter(l => leagueEntry(l.slug)?.image)) assert.ok(existsSync(join(process.cwd(), "public/leagues", l.slug + ".webp")), l.slug);
 });
 test("season start rolls over in July", () => { assert.equal(seasonStart(new Date("2026-10-03T00:00:00Z")), "2026-07-01"); assert.equal(seasonStart(new Date("2027-03-01T00:00:00Z")), "2026-07-01"); assert.equal(seasonStart(new Date("2027-07-02T00:00:00Z")), "2027-07-01"); });
 const H = [m("2026-08-20", "a", "b", 2, 0), m("2026-08-27", "c", "a", 1, 1), m("2026-09-03", "b", "c", 0, 3), m("2026-09-10", "a", "c", 0, 1), m("2025-12-01", "b", "a", 9, 0)];

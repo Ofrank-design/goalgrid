@@ -90,15 +90,17 @@ export function useMatchPlayer({
   sim,
   homeSlug,
   awaySlug,
+  homeCrest,
+  awayCrest,
   autoplay = true,
 }: MatchPlayerProps) {
   const homeTeam = useMemo<TeamVisual>(
-    () => teamVisual(homeSlug),
-    [homeSlug],
+    () => ({ ...teamVisual(homeSlug), crest: homeCrest ?? null }),
+    [homeSlug, homeCrest],
   );
   const awayTeam = useMemo<TeamVisual>(
-    () => teamVisual(awaySlug),
-    [awaySlug],
+    () => ({ ...teamVisual(awaySlug), crest: awayCrest ?? null }),
+    [awaySlug, awayCrest],
   );
   const kit = useMemo(
     () => kits(homeTeam, awayTeam),

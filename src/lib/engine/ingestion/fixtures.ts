@@ -5,11 +5,23 @@ import { validateMatch } from "@/lib/engine/validation/match";
 import { log } from "@/lib/logging/logger";
 import { footballData } from "@/lib/providers/football-data";
 import { recordHealth } from "@/lib/providers/health";
-import { ProviderError } from "@/lib/providers/types";
+import { ProviderError, type ProviderId } from "@/lib/providers/types";
 import { sportmonks } from "@/lib/providers/sportmonks";
+import { apiFootball } from "@/lib/providers/api-football";
+import { bigBalls } from "@/lib/providers/big-balls";
+import { theStatsApi } from "@/lib/providers/thestatsapi";
+import { goalApi } from "@/lib/providers/goal-api";
+import { sameTeam } from "@/lib/football/team-resolver";
+import { selectProviders } from "./fixture-plan";
 import type { Match, Source } from "@/types/football";
 
-const PROVIDERS = [sportmonks, footballData];
+interface FixtureProvider { id: ProviderId; configured(): boolean; fetch(q: { date: string }): Promise<{ data: Match[]; meta: { latencyMs: number } }> }
+
+/**
+ * The priority route. Within a tier the providers run side by side; a later tier is asked only when an earlier one came back empty or
+ * failed, or when it covers a competition the earlier ones cannot (see selectProviders). When two providers list the same match, the earlier one's record is kept.
+ */
+const TIERS: FixtureProvider[][] = [[footballData, sportmonks], [bigBalls, theStatsApi], [apiFootball, goalApi]];
 
 export interface FixturesResult {
   matches: Match[];
@@ -18,85 +30,75 @@ export interface FixturesResult {
   attempts: {
     provider: string;
     ok: boolean;
+    count?: number;
     error?: string;
+    skipped?: boolean;
   }[];
+  /** Matches in the next few days, filled only when the requested day has none (international break, midweek gap) so a page is never blank. */
+  lookahead?: Match[];
 }
+
+/** The same fixture from two providers: same competition, same two teams, same day. */
+const sameFixture = (a: Match, b: Match) => a.league.slug === b.league.slug && a.kickoffUtc.slice(0, 10) === b.kickoffUtc.slice(0, 10) && sameTeam(a.home.slug, b.home.slug) && sameTeam(a.away.slug, b.away.slug);
 
 async function loadFixtures(
   date: string,
 ): Promise<Omit<FixturesResult, "stale">> {
-  const attempts: FixturesResult["attempts"] = [];
-  let emptyProvider: Source | null = null;
+  const all = TIERS.flat();
+  const attempts: FixturesResult["attempts"] = all.filter((p) => !p.configured()).map((p) => ({ provider: p.id, ok: false, error: "not configured" }));
+  const answered: FixtureProvider[] = [], matches: Match[] = [];
 
-  for (const provider of PROVIDERS) {
-    if (!provider.configured()) {
-      attempts.push({
-        provider: provider.id,
-        ok: false,
-        error: "not configured",
-      });
-      continue;
-    }
-
-    try {
-      const { data, meta } = await provider.fetch({ date });
-      void recordHealth(provider.id, true, meta.latencyMs);
-
-      const validMatches = data.filter((match) => {
-        const issues = validateMatch(match);
-
-        if (issues.length) {
-          log.warn("match rejected", {
-            id: match.id,
-            issues,
+  for (const tier of TIERS) {
+    const todo = selectProviders(tier, answered, matches.length > 0);
+    for (const p of tier) if (p.configured() && !todo.includes(p)) attempts.push({ provider: p.id, ok: true, count: 0, skipped: true });
+    const settled = await Promise.all(
+      todo.map(async (provider) => {
+        try {
+          const { data, meta } = await provider.fetch({ date });
+          void recordHealth(provider.id, true, meta.latencyMs);
+          const valid = data.filter((match) => {
+            const issues = validateMatch(match);
+            if (issues.length) log.warn("match rejected", { id: match.id, issues });
+            return issues.length === 0;
           });
+          attempts.push({ provider: provider.id, ok: true, count: valid.length });
+          return { provider, matches: valid, ok: true };
+        } catch (error) {
+          const errorKind = error instanceof ProviderError ? error.kind : "unknown";
+          void recordHealth(provider.id, false, undefined, errorKind);
+          attempts.push({ provider: provider.id, ok: false, error: errorKind });
+          return { provider, matches: [] as Match[], ok: false };
         }
-
-        return issues.length === 0;
-      });
-
-      attempts.push({ provider: provider.id, ok: true });
-
-      if (validMatches.length) {
-        return {
-          matches: validMatches.sort((a, b) =>
-            a.kickoffUtc.localeCompare(b.kickoffUtc),
-          ),
-          source: provider.id as Source,
-          attempts,
-        };
+      }),
+    );
+    for (const r of settled) {
+      if (r.ok) answered.push(r.provider);
+      for (const match of r.matches) {
+        if (matches.some((kept) => sameFixture(kept, match))) continue;
+        matches.push(match);
       }
-
-      emptyProvider ??= provider.id as Source;
-    } catch (error) {
-      const errorKind =
-        error instanceof ProviderError ? error.kind : "unknown";
-
-      void recordHealth(provider.id, false, undefined, errorKind);
-      attempts.push({
-        provider: provider.id,
-        ok: false,
-        error: errorKind,
-      });
     }
   }
 
-  if (emptyProvider) {
-    return {
-      matches: [],
-      source: emptyProvider,
-      attempts,
-    };
+  if (all.some((p) => p.configured()) && !answered.length) {
+    throw new Error("All fixture providers failed");
+  }
+  matches.sort((a, b) => a.kickoffUtc.localeCompare(b.kickoffUtc));
+
+  let lookahead: Match[] | undefined;
+  if (!matches.length && theStatsApi.configured() && date >= new Date().toISOString().slice(0, 10)) {
+    try { lookahead = (await theStatsApi.lookahead(date)).filter((m) => validateMatch(m).length === 0).slice(0, 40); } catch { /* the lookahead is a convenience, never a reason to fail */ }
   }
 
-  throw new Error("All fixture providers failed");
+  const source = matches[0]?.provenance.source ?? answered[0]?.id ?? null;
+  return { matches, source: source as Source | null, attempts, ...(lookahead?.length ? { lookahead } : {}) };
 }
 
 export async function getFixtures(date: string): Promise<FixturesResult> {
   const { value, stale } = await cached(
     `fixtures:${date}`,
-    5 * 60_000,
-    60 * 60_000,
+    20 * 60_000,
+    3 * 3_600_000,
     () => loadFixtures(date),
   );
 

@@ -6,6 +6,7 @@ import { LLMS } from "@/lib/providers/llm";
 import { ProviderError } from "@/lib/providers/types";
 import { getPredictions } from "@/lib/engine/predictions";
 import { getMatchContext } from "@/lib/engine/ingestion/context";
+import { getMatchSignals } from "@/lib/engine/ingestion/signals";
 import { buildFacts } from "./facts";
 import { SYSTEM_PROMPT, userPrompt } from "./prompt";
 import { parseJsonObject, validateLlm } from "./validate";
@@ -17,7 +18,7 @@ export function getAnalysis(date: string, matchId: string): Promise<AiAnalysis> 
   return cached(`ai:${matchId}`, 6 * 3_600_000, 24 * 3_600_000, async () => {
     const item = (await getPredictions(date)).items.find(i => i.match.id === matchId);
     if (!item) throw new AnalysisUnavailable("Match not found"); if (!item.prediction) throw new AnalysisUnavailable(item.reason ?? "No statistical prediction for this match");
-    const ctx = await getMatchContext(item.match), facts = buildFacts({ match: item.match, prediction: item.prediction, market: ctx.market, weather: ctx.weather, news: ctx.news });
+    const ctx = await getMatchContext(item.match), signals = await getMatchSignals(item.match).catch(() => null), facts = buildFacts({ match: item.match, prediction: item.prediction, market: ctx.market, weather: ctx.weather, news: ctx.news, signals });
     const ids = new Set(facts.map(f => f.id)), user = userPrompt(facts);
     const runs: LlmRun[] = await Promise.all(LLMS.filter(l => l.configured()).map(async (l): Promise<LlmRun> => {
       const t0 = Date.now();

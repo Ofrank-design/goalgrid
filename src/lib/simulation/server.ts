@@ -1,3 +1,4 @@
+import { DOMESTIC_SLUGS } from "@/lib/football/league-registry";
 import "server-only";
 import { log } from "@/lib/logging/logger";
 import { NextResponse } from "next/server";
@@ -13,7 +14,8 @@ import { ENGINE_VERSION, MODEL_VERSION, validSeed } from "./rng";
 import { GOALGRID_LIMITS, simulationLimits } from "@/lib/control";
 export { ENGINE_VERSION, MODEL_VERSION };
 export type RunKind = "match" | "multi" | "season" | "experiment" | "fictional" | "multiplier" | "risk" | "backtest";
-export const LEAGUES = ["premier-league", "la-liga", "serie-a", "bundesliga", "ligue-1"] as const;
+/** Domestic leagues only: cups mix teams from several leagues, so they have no table to simulate. */
+export const LEAGUES = DOMESTIC_SLUGS;
 export const LABELS = ["SIMULATION", "SYNTHETIC DATA", "HYPOTHETICAL RESULT", "NOT A LIVE MATCH PREDICTION", "NOT VERIFIED PERFORMANCE"];
 export const NOTICE = "A hypothetical result from a simulation. It is not a prediction of a real match and does not count toward any prediction record, leaderboard, trophy or challenge.";
 export const LIMITS = { pro: { multi: GOALGRID_LIMITS.simulation.multiPro, season: GOALGRID_LIMITS.simulation.seasonPro }, premium: { multi: GOALGRID_LIMITS.simulation.multiPremium, season: GOALGRID_LIMITS.simulation.seasonPremium } } as const;

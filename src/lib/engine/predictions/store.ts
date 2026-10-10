@@ -8,7 +8,7 @@ import { storedIsUsable } from "./freshness";
 
 /** Best effort throughout: if the table is missing or unreachable, callers fall back to fitting models, exactly as before this cache existed. */
 const predictionKey = (matchId: string) => `prediction:${matchId}`;
-const leagueKey = (league: string, kind: "metrics" | "models") => `league:${league}:${kind}`;
+const leagueKey = (league: string, kind: "metrics" | "models" | "teams") => `league:${league}:${kind}`;
 type Row = { key: string; payload: unknown; engine_version: string; built_at: string };
 
 export async function readStoredPredictions(matches: Match[], now = Date.now()): Promise<Map<string, Prediction>> {
@@ -41,7 +41,7 @@ export async function writeStoredPredictions(entries: { match: Match; prediction
   } catch (e) { log.warn("could not store predictions", { message: (e as Error).message }); }
 }
 
-export async function readLeagueCache<T>(league: string, kind: "metrics" | "models", maxAgeMs: number, now = Date.now()): Promise<T | null> {
+export async function readLeagueCache<T>(league: string, kind: "metrics" | "models" | "teams", maxAgeMs: number, now = Date.now()): Promise<T | null> {
   try {
     const { data, error } = await supabaseAdmin().from("engine_cache").select("payload,engine_version,built_at").eq("key", leagueKey(league, kind)).maybeSingle();
     if (error) throw new Error(error.message);
@@ -50,7 +50,7 @@ export async function readLeagueCache<T>(league: string, kind: "metrics" | "mode
   } catch (e) { log.warn("league cache unavailable", { league, kind, message: (e as Error).message }); return null; }
 }
 
-export async function writeLeagueCache(league: string, kind: "metrics" | "models", payload: unknown): Promise<void> {
+export async function writeLeagueCache(league: string, kind: "metrics" | "models" | "teams", payload: unknown): Promise<void> {
   try {
     const { error } = await supabaseAdmin().from("engine_cache").upsert({ key: leagueKey(league, kind), payload, engine_version: ENGINE_VERSION, built_at: new Date().toISOString() }, { onConflict: "key" });
     if (error) throw new Error(error.message);

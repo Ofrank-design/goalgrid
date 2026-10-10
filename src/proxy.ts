@@ -24,4 +24,4 @@ export async function proxy(req: NextRequest) {
   if (!user && needsSignIn(path)) { const to = req.nextUrl.clone(); to.pathname = "/sign-in"; to.search = `?next=${encodeURIComponent(path + req.nextUrl.search)}`; return NextResponse.redirect(to); }
   return res;
 }
-export const config = { matcher: ["/((?!_next/static|_next/image|favicon.ico|home/|crests/|site/|brand/).*)"] };
+export const config = { matcher: ["/((?!_next/static|_next/image|favicon.ico|icon-|apple-touch-icon|home/|site/|brand/).*)"] };

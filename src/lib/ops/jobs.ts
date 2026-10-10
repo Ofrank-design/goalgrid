@@ -1,3 +1,4 @@
+import { warmTeams } from "@/lib/football/teams";
 import "server-only";
 import { log } from "@/lib/logging/logger";
 import { ENGINE_VERSION, FREEZE_MINUTES, planVersion } from "@/lib/engine/versioning";
@@ -122,5 +123,7 @@ export const maintenanceJob = () => tracked("maintenance", async () => {
   const { error } = await supabaseAdmin().rpc("prune_rate_events");
   if (error) throw new Error(error.message);
   await pruneEngineCache();
-  return { ...runs, rateEventsPruned: true, engineCachePruned: true };
+  // Team lists, logos and squads for every competition. A few per run, so the providers' per-minute limits are never the reason the job fails.
+  const teams = await warmTeams().catch(() => ({ refreshed: 0, failed: -1, fresh: 0 }));
+  return { ...runs, rateEventsPruned: true, engineCachePruned: true, teams };
 });

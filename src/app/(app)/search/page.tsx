@@ -2,18 +2,19 @@ import Link from "next/link";
 
 import { Crest } from "@/components/Crest";
 import { LeagueBadge } from "@/components/LeagueBadge";
-import { LEAGUES, searchClubs, searchLeagues } from "@/lib/football/clubs";
+import { LEAGUES, searchLeagues } from "@/lib/football/clubs";
 import { searchCommunityContent } from "@/lib/community/search";
 import { searchSportmonksPlayers } from "@/lib/providers/sportmonks/players";
+import { searchSquadPlayers, searchTeams } from "@/lib/football/teams";
 
 export const metadata = { title: "Search | GoalGrid" };
 export const dynamic = "force-dynamic";
 
 export default async function Search({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
   const q = ((await searchParams).q ?? "").slice(0, 60);
-  const clubs = searchClubs(q);
+  const clubs = q.length >= 2 ? await searchTeams(q, 24).catch(() => []) : [];
   const leagues = searchLeagues(q);
-  const players = q.length >= 2 ? await searchSportmonksPlayers(q).catch(() => []) : [];
+  const players = q.length >= 3 ? [...(await searchSquadPlayers(q).catch(() => [])).map(p => ({ id: `${p.id}?team=${p.teamSlug}&league=${p.league}`, name: p.name, position: p.position, nationality: p.nationality, teamName: p.teamName, teamSlug: p.teamSlug, imageUrl: p.imageUrl })), ...(process.env.SPORTMONKS_API_KEY ? await searchSportmonksPlayers(q).catch(() => []) : [])] : [];
   const community = q.length >= 2 ? await searchCommunityContent(q).catch(() => []) : [];
   const hasResults = clubs.length || leagues.length || players.length || community.length;
 
@@ -27,9 +28,9 @@ export default async function Search({ searchParams }: { searchParams: Promise<{
     {q.length >= 2 && !hasResults && <div className="card"><p className="note">Nothing found for “{q}”.</p></div>}
 
     {leagues.length > 0 && <><h2>Leagues</h2><div className="grid">{leagues.map((league) => <Link key={league.slug} href={`/leagues/${league.slug}`} className="card link trow"><LeagueBadge slug={league.slug} /><div><b>{league.name}</b><div className="note">{league.country}</div></div></Link>)}</div></>}
-    {clubs.length > 0 && <><h2>Teams</h2><div className="grid" style={{ gridTemplateColumns: "repeat(auto-fill,minmax(230px,1fr))" }}>{clubs.map((club) => <Link key={club.key} href={`/teams/${club.slug}`} className="card link trow"><Crest slug={club.slug} url={null} name={club.name} /><div><b>{club.name}</b><div className="note">{LEAGUES.find((league) => league.slug === club.league)?.name}</div></div></Link>)}</div></>}
+    {clubs.length > 0 && <><h2>Teams</h2><div className="grid" style={{ gridTemplateColumns: "repeat(auto-fill,minmax(230px,1fr))" }}>{clubs.map(({ t, league }) => <Link key={t.providerId + league} href={`/teams/${t.slug}?league=${league}`} className="card link trow"><Crest url={t.crestUrl} name={t.name} /><div><b>{t.name}</b><div className="note">{LEAGUES.find((l) => l.slug === league)?.name}</div></div></Link>)}</div></>}
     {players.length > 0 && <><h2>Players</h2><div className="grid">{players.map((player) => <Link key={player.id} href={`/players/${player.id}`} className="card link"><b>{player.name}</b><div className="meta"><span>{player.position ?? "Player"}</span>{player.teamName && <span>{player.teamName}</span>}{player.nationality && <span>{player.nationality}</span>}</div></Link>)}</div></>}
     {community.length > 0 && <><h2>Community</h2><div className="grid">{community.map((post) => <Link key={post.id} href={`/community?post=${encodeURIComponent(post.id)}`} className="card link"><b>@{post.username}</b><p className="note">{post.excerpt}</p></Link>)}</div></>}
-    {!players.length && q.length >= 2 && !process.env.SPORTMONKS_API_KEY && <p className="note">Player search will appear when the Sportmonks player feed is connected.</p>}
+    {!players.length && q.length >= 2 && !process.env.SPORTMONKS_API_KEY && !process.env.FOOTBALL_DATA_API_KEY && !process.env.API_FOOTBALL_KEY && <p className="note">Player search will appear when a football data provider is connected.</p>}
   </>;
 }

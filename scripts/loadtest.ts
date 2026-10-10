@@ -1,3 +1,4 @@
+export {};
 /** Usage: tsx scripts/loadtest.ts <url> [concurrency=20] [seconds=15]. Run it against a staging site, never against production without warning your providers. */
 async function main() {
   const [url, c = "20", s = "15"] = process.argv.slice(2); if (!url) { console.error("Usage: tsx scripts/loadtest.ts <url> [concurrency] [seconds]"); process.exit(1); }

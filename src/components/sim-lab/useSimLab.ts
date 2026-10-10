@@ -13,6 +13,7 @@ export function useSimLab({
     initial?.league ?? "premier-league",
   );
   const [teams, setTeams] = useState<string[]>([]);
+  const [crests, setCrests] = useState<Record<string, string>>({});
   const [presets, setPresets] = useState<Preset[]>([]);
   const [home, setHome] = useState(initial?.home ?? "");
   const [away, setAway] = useState(initial?.away ?? "");
@@ -51,6 +52,7 @@ export function useSimLab({
         }
 
         setTeams(result.teams);
+        setCrests(result.crests ?? {});
         setPresets(result.presets ?? []);
 
         if (!start || league !== start.league) {
@@ -140,6 +142,7 @@ export function useSimLab({
     setLeague,
     teams,
     setTeams,
+    crests,
     presets,
     setPresets,
     home,

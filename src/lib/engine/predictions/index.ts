@@ -4,6 +4,7 @@ import { log } from "@/lib/logging/logger";
 import { getFixtures } from "@/lib/engine/ingestion/fixtures";
 import { getHistory } from "@/lib/engine/ingestion/history";
 import { getMarketSignal, getWeatherSignal } from "@/lib/engine/ingestion/context";
+import { getMatchSignals } from "@/lib/engine/ingestion/signals";
 import { buildEnsemble, predictMatch, weightedMatrix } from "@/lib/engine/models/ensemble";
 import type { Match, LeagueSlug } from "@/types/football";
 import type { ModelMetric, Prediction } from "@/types/prediction";
@@ -53,7 +54,8 @@ export async function predictOne(date: string, matchId: string): Promise<(Predic
   let e; try { e = await ensembleFor(match.league.slug); } catch { return { match, prediction: null, reason: "No match history available for this league yet", leagueMetrics: [] }; }
   const open = match.status === "scheduled" || match.status === "live"; let market = null, weather = null;
   if (open) { try { const s = await getMarketSignal(match); market = s ? s.impliedProbabilities : null; } catch { /* optional */ } try { const w = await getWeatherSignal(match); weather = w ? { tempC: w.tempC, windKmh: w.windKmh, rainChancePct: w.rainChancePct } : null; } catch { /* optional */ } }
-  const prediction = predictMatch(e, match.home.slug, match.away.slug, { market, weather, kickoffUtc: match.kickoffUtc });
+  let signals; if (open) { try { const s = await getMatchSignals(match); if (s.availabilityShift != null) signals = { availabilityShift: s.availabilityShift }; } catch { /* optional */ } }
+  const prediction = predictMatch(e, match.home.slug, match.away.slug, { market, weather, kickoffUtc: match.kickoffUtc, signals });
   return { match, prediction, ...(prediction ? {} : { reason: "Not enough history for one of these teams" }), leagueMetrics: e.metrics };
 }
 

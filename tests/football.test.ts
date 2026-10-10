@@ -6,7 +6,7 @@ import { teamSlug } from "../src/lib/engine/normalization/teams";
 import { validateMatch } from "../src/lib/engine/validation/match";
 const NOW = new Date("2026-10-01T10:00:00Z");
 const fd = [{ id: 1, utcDate: "2026-10-01T19:00:00Z", status: "TIMED", matchday: 8, homeTeam: { id: 57, name: "Arsenal FC", shortName: "Arsenal", crest: "x" }, awayTeam: { id: 61, name: "Chelsea FC" }, competition: { id: 2021, code: "PL", name: "Premier League" }, score: { fullTime: { home: null, away: null } } },
-  { id: 2, utcDate: "2026-10-01T19:00:00Z", status: "TIMED", homeTeam: { id: 1, name: "X" }, awayTeam: { id: 2, name: "Y" }, competition: { id: 9, code: "CL", name: "Champions League" } }];
+  { id: 2, utcDate: "2026-10-01T19:00:00Z", status: "TIMED", homeTeam: { id: 1, name: "X" }, awayTeam: { id: 2, name: "Y" }, competition: { id: 9, code: "XX", name: "Not tracked" } }];
 const sm = [{ id: 10, league_id: 384, starting_at: "2026-10-01 18:45:00", participants: [{ id: 1, name: "FC Internazionale Milano", meta: { location: "home" } }, { id: 2, name: "SSC Napoli", meta: { location: "away" } }], state: { developer_name: "FT" },
   scores: [{ description: "1ST_HALF", score: { goals: 1, participant: "home" } }, { description: "CURRENT", score: { goals: 2, participant: "home" } }, { description: "CURRENT", score: { goals: 0, participant: "away" } }] }];
 test("football-data: maps tracked leagues, drops others", () => {

@@ -3,7 +3,8 @@ import { getFixtures } from "@/lib/engine/ingestion/fixtures";
 import { getHistory } from "@/lib/engine/ingestion/history";
 import { shiftDate, todayUtc } from "@/lib/app/format";
 import type { Match } from "@/types/football";
-import { LeagueKey, sameClub } from "./clubs";
+import type { LeagueKey } from "./clubs";
+import { sameTeam as sameClub } from "./team-resolver";
 import { computeTable, seasonStart, teamSummary } from "./table";
 /** Standings and team form are computed from the season's results, so they need no extra data source. They are cached for 12 hours with the match history. */
 export async function leagueTable(league: LeagueKey) { return computeTable(await getHistory(league), seasonStart()); }

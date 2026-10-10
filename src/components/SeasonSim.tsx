@@ -1,7 +1,8 @@
 "use client";
+import { LEAGUE_REGISTRY } from "@/lib/football/league-registry";
 import { useState } from "react";
 import { SimBanner } from "./SimLab";
-const LEAGUES: [string, string][] = [["premier-league", "Premier League"], ["la-liga", "La Liga"], ["serie-a", "Serie A"], ["bundesliga", "Bundesliga"], ["ligue-1", "Ligue 1"]], nice = (s: string) => s.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" "), pc = (x: number) => `${(x * 100).toFixed(1)}%`;
+const LEAGUES: [string, string][] = LEAGUE_REGISTRY.filter((l) => l.kind === "league").map((l) => [l.slug, l.name]), nice = (s: string) => s.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" "), pc = (x: number) => `${(x * 100).toFixed(1)}%`;
 type T = { team: string; expectedPoints: number; averagePosition: number; title: number; topFour: number; relegation: number };
 export function SeasonSim({ maxSeasons }: { maxSeasons: number }) {
   const [league, setLeague] = useState("premier-league"), [n, setN] = useState(Math.min(200, maxSeasons)), [seed, setSeed] = useState(""), [res, setRes] = useState<{ teams?: T[]; seed?: string; seasons?: number; note?: string; error?: string } | null>(null), [busy, setBusy] = useState(false);

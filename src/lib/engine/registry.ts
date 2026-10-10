@@ -1,3 +1,4 @@
+import { LEAGUE_REGISTRY } from "@/lib/football/league-registry";
 import { ALL_MODELS, type Ensemble } from "./models/ensemble";
 import { RETIRED } from "./models/specialist";
 import type { ModelFamily } from "@/types/prediction";
@@ -11,7 +12,7 @@ export interface RegistryEntry {
   validated: boolean; logLoss: number | null; weight: number; note: string | null; createdAt: string; activatedAt: string | null; retiredAt: string | null;
 }
 const MIN_SAMPLE: Partial<Record<ModelFamily, number>> = { "machine-learning": 150, "deep-learning": 150, "state-space": 60, goals: 30, bayesian: 30, rating: 30, copula: 100 };
-const COMPETITIONS = ["premier-league", "la-liga", "serie-a", "bundesliga", "ligue-1"];
+const COMPETITIONS: string[] = LEAGUE_REGISTRY.map(l => l.slug);
 const failureModes = (note: string | null) => note ? [note] : [];
 const pctHealth = (x: { status?: string; logLoss?: number | null; testMatches?: number } | undefined) => !x ? null : x.status === "tested" ? Math.max(0, Math.min(1, 1 - Math.min(Number(x.logLoss ?? 1), 1))) : x.status === "degraded" ? 0.35 : 0.2;
 type BaseEntry = Pick<RegistryEntry,"status"|"health"|"producesScoreMatrix"> & { calibrated: boolean };

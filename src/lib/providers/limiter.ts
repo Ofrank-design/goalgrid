@@ -10,8 +10,12 @@ type ProviderLimit = {
 const PROVIDER_LIMITS: Partial<Record<ProviderId, ProviderLimit>> = {
   "football-data": { max: 9, perMs: 60_000 },
   sportmonks: { max: 40, perMs: 60_000 },
+  "api-football": { max: 10, perMs: 60_000 },
   "odds-api": { max: 5, perMs: 60_000 },
   oddspapi: { max: 1, perMs: 1_100 },
+  "big-balls": { max: 60, perMs: 60_000 },
+  "goal-api": { max: 30, perMs: 60_000 },
+  thestatsapi: { max: 30, perMs: 60_000 },
 };
 
 const requestTimes = new Map<ProviderId, number[]>();

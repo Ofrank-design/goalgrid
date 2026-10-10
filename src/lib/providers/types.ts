@@ -1,5 +1,5 @@
 /** Provider adapter rule: raw provider data is converted into GoalGrid types in adapters, and nowhere else. */
-export type ProviderId = "sportmonks" | "football-data" | "api-football" | "stats" | "oddspapi" | "odds-api" | "openweather" | "open-meteo" | "serpapi" | "newsapi" | "resend" | "groq" | "anthropic" | "openrouter" | "gemini" | "nvidia";
+export type ProviderId = "sportmonks" | "football-data" | "api-football" | "stats" | "thestatsapi" | "goal-api" | "big-balls" | "oddspapi" | "odds-api" | "openweather" | "open-meteo" | "serpapi" | "newsapi" | "resend" | "groq" | "anthropic" | "openrouter" | "gemini" | "nvidia";
 export interface ProviderMeta { fetchedAt: string; provider: ProviderId; cached: boolean; latencyMs: number }
 export interface ProviderResult<T> { data: T; meta: ProviderMeta }
 export class ProviderError extends Error {

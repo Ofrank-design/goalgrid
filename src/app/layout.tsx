@@ -14,7 +14,14 @@ const font = localFont({
   fallback: ["system-ui", "-apple-system", "Segoe UI", "Roboto", "sans-serif"],
 });
 
-export const metadata = { title: "GoalGrid | AI Football Intelligence" };
+export const metadata = {
+  title: "GoalGrid | AI Football Intelligence",
+  // Served from /public so the tab icon works on every route and in production.
+  icons: {
+    icon: [{ url: "/favicon.ico", sizes: "any" }, { url: "/icon-192.png", type: "image/png", sizes: "192x192" }, { url: "/icon-512.png", type: "image/png", sizes: "512x512" }],
+    apple: "/apple-touch-icon.png",
+  },
+};
 
 // Stylesheets are imported per area (the homepage, the app, the public site) so the
 // homepage keeps its own CSS and does not pick up the app's global rules.

@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 
 import { searchCommunityContent } from "@/lib/community/search";
-import { LEAGUES, searchClubs, searchLeagues } from "@/lib/football/clubs";
+import { LEAGUES, searchLeagues } from "@/lib/football/clubs";
 import { searchSportmonksPlayers } from "@/lib/providers/sportmonks/players";
+import { searchSquadPlayers, searchTeams } from "@/lib/football/teams";
 import { TtlCache } from "@/lib/cache/ttl";
 import { allowIp, tooMany } from "@/lib/security/limits";
 
@@ -22,18 +23,18 @@ export async function GET(request: Request) {
 
   const playerKey = q.toLowerCase().normalize("NFKD").replace(/[^a-z0-9 ]+/g, "");
   const [teams, players, community] = await Promise.all([
-    Promise.resolve(searchClubs(q, 8)),
+    searchTeams(q, 8).catch(() => []),
     // Three characters is the shortest query worth a paid lookup; shorter ones are served from the local club and league lists.
-    q.length >= 3 ? playerCache.remember(playerKey, () => searchSportmonksPlayers(q, 8)).catch(() => []) : Promise.resolve([]),
+    q.length >= 3 ? playerCache.remember(playerKey, async () => { const [squads, sm] = await Promise.all([searchSquadPlayers(q, 8).catch(() => []), process.env.SPORTMONKS_API_KEY ? searchSportmonksPlayers(q, 8).catch(() => []) : Promise.resolve([])]); return [...squads.map(p => ({ id: `${p.id}?team=${p.teamSlug}&league=${p.league}`, name: p.name, position: p.position, nationality: p.nationality, teamName: p.teamName, teamSlug: p.teamSlug, imageUrl: p.imageUrl })), ...sm].slice(0, 8); }) : Promise.resolve([]),
     searchCommunityContent(q, 8),
   ]);
 
   return NextResponse.json({
     query: q,
-    teams: teams.map((club) => ({ name: club.name, slug: club.slug, league: LEAGUES.find((league) => league.slug === club.league)?.name ?? club.league })),
+    teams: teams.map(({ t, league }) => ({ name: t.name, slug: t.slug, leagueSlug: league, league: LEAGUES.find((l) => l.slug === league)?.name ?? league, crestUrl: t.crestUrl })),
     leagues: searchLeagues(q).map((league) => ({ name: league.name, slug: league.slug, country: league.country })),
     players,
     community,
-    playerSearchAvailable: Boolean(process.env.SPORTMONKS_API_KEY),
+    playerSearchAvailable: Boolean(process.env.SPORTMONKS_API_KEY || process.env.FOOTBALL_DATA_API_KEY || process.env.API_FOOTBALL_KEY),
   }, { headers: CACHE_HEADERS });
 }

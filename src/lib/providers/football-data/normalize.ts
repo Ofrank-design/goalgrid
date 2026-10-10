@@ -1,7 +1,9 @@
 import type { LeagueSlug, Match, MatchStatus } from "../../../types/football";
+import { LEAGUE_REGISTRY } from "../../football/league-registry";
 import type { HistMatch } from "../../../types/prediction";
 import { teamSlug } from "../../engine/normalization/teams";
-export const FD_COMPETITIONS: Record<string, { slug: LeagueSlug; name: string }> = { PL: { slug: "premier-league", name: "Premier League" }, PD: { slug: "la-liga", name: "LaLiga" }, SA: { slug: "serie-a", name: "Serie A" }, BL1: { slug: "bundesliga", name: "Bundesliga" }, FL1: { slug: "ligue-1", name: "Ligue 1" } };
+/** football-data.org competition codes, from the league registry. */
+export const FD_COMPETITIONS: Record<string, { slug: LeagueSlug; name: string }> = Object.fromEntries(LEAGUE_REGISTRY.flatMap((l) => ("fd" in l ? [[l.fd, { slug: l.slug, name: l.name }]] : [])));
 const STATUS: Record<string, MatchStatus> = { SCHEDULED: "scheduled", TIMED: "scheduled", IN_PLAY: "live", PAUSED: "live", FINISHED: "finished", AWARDED: "finished", POSTPONED: "postponed", SUSPENDED: "postponed", CANCELLED: "cancelled" };
 interface FdTeam { id: number; name: string; shortName?: string | null; crest?: string | null }
 export interface FdMatch { id: number; utcDate: string; status: string; matchday?: number | null; lastUpdated?: string; homeTeam: FdTeam; awayTeam: FdTeam; competition: { id: number; code: string; name: string }; score?: { fullTime?: { home: number | null; away: number | null } } }

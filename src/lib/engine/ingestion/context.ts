@@ -4,6 +4,7 @@ import { log } from "@/lib/logging/logger";
 import { recordHealth } from "@/lib/providers/health";
 import { oddsApi } from "@/lib/providers/odds-api";
 import { oddsPapi } from "@/lib/providers/oddspapi";
+import { fetchTsOdds, theStatsApi } from "@/lib/providers/thestatsapi";
 import { openMeteo } from "@/lib/providers/open-meteo";
 import { openWeather } from "@/lib/providers/openweather";
 import { newsApi } from "@/lib/providers/newsapi";
@@ -15,13 +16,16 @@ import type { MarketSnapshot, MatchContext, NewsArticle, OddsEvent, Weather } fr
 const H = 3_600_000;
 /** Bookmaker prices from every configured provider are merged by bookmaker, so a second source adds coverage instead of replacing the first. */
 async function market(m: Match, notes: string[]): Promise<MarketSnapshot | null> {
-  const sources = [oddsApi, oddsPapi].filter(p => p.configured()); if (!sources.length) { notes.push("Odds: no provider configured"); return null; }
+  const sources = [oddsApi, oddsPapi].filter(p => p.configured()); if (!sources.length && !theStatsApi.configured()) { notes.push("Odds: no provider configured"); return null; }
   const ttl = Number(process.env.ODDS_CACHE_HOURS ?? 6) * H, found: OddsEvent[] = [];
   const results = await Promise.allSettled(sources.map(async p => { const { value } = await cached(`odds:${p.id}:${m.league.slug}`, ttl, 24 * H, async () => { const r = await p.fetch({ league: m.league.slug }); void recordHealth(p.id, true, r.meta.latencyMs); return r.data; }); const ev = findOddsEvent(value, m); if (ev) found.push(ev); }));
   results.forEach((r, i) => { if (r.status === "rejected") void recordHealth(sources[i].id, false); });
+  // TheStatsAPI prices one match per request, so it is asked only when the per-league odds feeds found nothing.
+  let viaTs = false;
+  if (!found.length && theStatsApi.configured()) { try { const ev = await fetchTsOdds(m); if (ev) { found.push(ev); viaTs = true; } } catch { void recordHealth("thestatsapi", false); } }
   if (!found.length) { notes.push("Odds: no bookmaker listing matched this fixture"); return null; }
   const seen = new Set<string>(), merged: OddsEvent = { ...found[0], bookmakers: found.flatMap(e => e.bookmakers).filter(b => !seen.has(b.key) && seen.add(b.key)) };
-  return buildMarket(merged);
+  const snap = buildMarket(merged); return snap && viaTs ? { ...snap, provenance: { ...snap.provenance, source: "thestatsapi" } } : snap;
 }
 /** Odds only, for the prediction engine. Shares the per league odds cache, so it adds no extra credits. */
 export async function getMarketSignal(m: Match): Promise<MarketSnapshot | null> { return market(m, []); }

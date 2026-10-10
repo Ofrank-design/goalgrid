@@ -3,10 +3,12 @@ import assert from "node:assert/strict";
 import { FORMATIONS, along, choreograph, colourDistance, formationFor, isBeatEvent, kits, positionsFor, teamVisual, textOn } from "../src/lib/simulation/visual";
 import { simulateMatch } from "../src/lib/simulation/match";
 import { poissonPmf } from "../src/lib/engine/models/math";
-import { CLUBS } from "../src/lib/football/clubs";
+import teamsJson from "../src/content/teams-visual.json";
+const KEYS = Object.keys(teamsJson);
 const pm = (lh: number, la: number) => { const M = Array.from({ length: 9 }, (_, x) => Array.from({ length: 9 }, (_, y) => poissonPmf(x, lh) * poissonPmf(y, la))), s = M.flat().reduce((a, b) => a + b, 0); return M.map(r => r.map(v => v / s)); };
 test("team visuals come from data: every club has colours, short name and crest; different clubs differ; unknown slugs get stable colours", () => {
-  for (const c of CLUBS) { const v = teamVisual(c.slug); assert.match(v.primary, /^#[0-9A-Fa-f]{6}$/); assert.match(v.secondary, /^#[0-9A-Fa-f]{6}$/); assert.ok(v.shortName.length >= 2 && v.shortName.length <= 3, c.slug); assert.ok(v.crest?.startsWith("/crests/"), c.slug); }
+  for (const key of KEYS) { const v = teamVisual(key); assert.match(v.primary, /^#[0-9A-Fa-f]{6}$/); assert.match(v.secondary, /^#[0-9A-Fa-f]{6}$/); assert.ok(v.shortName.length >= 2 && v.shortName.length <= 3, key); assert.equal(v.crest, null); }
+  assert.equal(teamVisual("manchester-city").shortName, teamVisual("man-city").shortName); assert.equal(teamVisual("Arsenal-FC".toLowerCase()).shortName, "ARS");
   assert.notEqual(teamVisual("arsenal").primary, teamVisual("manchester-city").primary); assert.equal(teamVisual("arsenal").shortName, "ARS"); const u = teamVisual("fictional-fc"); assert.deepEqual(u, teamVisual("fictional-fc")); assert.equal(u.crest, null); assert.notEqual(teamVisual("fictional-fc").primary, teamVisual("another-team").primary);
 });
 test("kits: clashing colours are fixed for the away side, readable text colour is chosen", () => {
@@ -15,7 +17,7 @@ test("kits: clashing colours are fixed for the away side, readable text colour i
 });
 test("formations: eleven players each, one goalkeeper, inside the pitch, same team always gets the same one", () => {
   for (const f of FORMATIONS) { assert.equal(f.slots.length, 11, f.name); assert.equal(f.slots.filter(s => s.role === "GK").length, 1); assert.ok(f.slots.every(s => s.x >= 0 && s.x <= 100 && s.y >= 0 && s.y <= 100)); }
-  assert.deepEqual(formationFor("arsenal"), formationFor("arsenal")); assert.ok(new Set(CLUBS.map(c => formationFor(c.slug).name)).size >= 3);
+  assert.deepEqual(formationFor("arsenal"), formationFor("arsenal")); assert.ok(new Set(KEYS.map(k => formationFor(k).name)).size >= 3);
 });
 test("positioning: attacking pushes up, defending drops back, ball pulls the shape, losing late pushes forward, away side is mirrored, everyone stays on the pitch", () => {
   const f = FORMATIONS[0], avg = (p: { x: number }[]) => p.slice(1).reduce((a, q) => a + q.x, 0) / 10, ball = { x: 55, y: 50 };

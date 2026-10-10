@@ -2,14 +2,16 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { PageHero } from "@/components/PageHero";
-import { getSportmonksPlayer } from "@/lib/providers/sportmonks/players";
+import { getPlayer } from "@/lib/football/players";
 
 export const dynamic = "force-dynamic";
 
-export default async function PlayerPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function PlayerPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ team?: string; league?: string }> }) {
   const { id } = await params;
-  const player = await getSportmonksPlayer(id).catch(() => null);
+  const hint = await searchParams;
+  const player = await getPlayer(decodeURIComponent(id), hint).catch(() => null);
   if (!player) notFound();
+  const facts = [["Age", player.age], ["Shirt", player.shirtNumber], ["Appearances", player.stats?.appearances], ["Goals", player.stats?.goals], ["Assists", player.stats?.assists]].filter(([, v]) => v != null);
 
   return (
     <>
@@ -17,7 +19,7 @@ export default async function PlayerPage({ params }: { params: Promise<{ id: str
         image="lounge"
         badge="PLAYER INTELLIGENCE"
         title={player.name}
-        subtitle="Verified player information from the connected football-data provider."
+        subtitle="Player details from the connected football data providers."
         position="50% 58%"
       />
       <div className="card player-profile">
@@ -28,7 +30,8 @@ export default async function PlayerPage({ params }: { params: Promise<{ id: str
             {player.nationality && <span>{player.nationality}</span>}
             {player.teamName && <span>{player.teamName}</span>}
           </div>
-          {player.teamSlug && <Link className="btn sm" href={`/teams/${player.teamSlug}`}>View team</Link>}
+          {facts.length > 0 && <div className="meta" style={{ marginTop: 10 }}>{facts.map(([k, v]) => <span key={String(k)}>{k}: {String(v)}</span>)}</div>}
+          {player.teamSlug && <Link className="btn sm" href={`/teams/${player.teamSlug}${player.leagueSlug ? `?league=${player.leagueSlug}` : ""}`}>View team</Link>}
         </div>
       </div>
     </>
