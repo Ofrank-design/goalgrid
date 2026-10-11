@@ -32,7 +32,7 @@ export const refreshJob = () => tracked("refresh", async () => {
   const db = supabaseAdmin(); let saved = 0;
   for (const date of [todayUtc(), shiftDate(todayUtc(), 1)]) {
     const r = await getPredictions(date, { refresh: true });
-    const rows = r.items.filter(i => i.prediction && i.match.status === "scheduled" && Date.parse(i.match.kickoffUtc) > Date.now() + FREEZE_MINUTES * 60_000).map(({ match: m, prediction: p }) => ({ match_id: m.id, match_date: date, league_slug: m.league.slug, home_name: m.home.name, away_name: m.away.name, kickoff_utc: m.kickoffUtc,
+    const rows = r.items.filter(i => i.prediction && !i.prediction.baseline && i.match.status === "scheduled" && Date.parse(i.match.kickoffUtc) > Date.now() + FREEZE_MINUTES * 60_000).map(({ match: m, prediction: p }) => ({ match_id: m.id, match_date: date, league_slug: m.league.slug, home_name: m.home.name, away_name: m.away.name, kickoff_utc: m.kickoffUtc,
       p_home: p!.probabilities.home, p_draw: p!.probabilities.draw, p_away: p!.probabilities.away, xg_home: p!.expectedGoals.home, xg_away: p!.expectedGoals.away, btts: p!.btts, over25: p!.over25, confidence: p!.confidence, models_used: p!.modelsUsed, updated_at: new Date().toISOString() }));
     if (rows.length) await writeVersions(db, rows, r.items);
     if (rows.length) { const { error } = await db.from("prediction_snapshots").upsert(rows, { onConflict: "match_id" }); if (error) throw new Error(error.message); saved += rows.length; }

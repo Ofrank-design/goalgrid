@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getPredictions } from "@/lib/engine/predictions";
+import { matchPayload } from "@/lib/engine/markets";
 import { currentTier, hasTier } from "@/lib/entitlements";
 import { log } from "@/lib/logging/logger";
 export const maxDuration = 60;
@@ -15,7 +16,7 @@ export async function GET(req: Request) {
     const r = await getPredictions(date);
     const items = r.items.map(({ match, prediction, reason }) => ({
       match: crests ? match : { ...match, home: { ...match.home, crestUrl: null }, away: { ...match.away, crestUrl: null } },
-      prediction: prediction ? (deep ? prediction : { ...prediction, models: [] }) : null, reason: reason ?? null }));
+      prediction: prediction ? (deep ? prediction : { ...prediction, models: [] }) : null, payload: prediction ? matchPayload(match, prediction) : null, reason: reason ?? null }));
     return NextResponse.json({ date, source: r.source, stale: r.stale, tier, items, ...(deep ? { leagues: r.leagues } : {}) }, { headers: { "Cache-Control": "private, max-age=60" } });
   } catch (e) { log.error("predictions unavailable", { date, message: (e as Error).message }); return NextResponse.json({ error: "Predictions are temporarily unavailable" }, { status: 503 }); }
 }

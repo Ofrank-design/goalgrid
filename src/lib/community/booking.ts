@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { MATCH_ID_RE } from "@/lib/football/match-id";
 export type Verification = "unverified" | "pending_review" | "verified" | "rejected" | "expired";
 export type ModStatus = "active" | "hidden" | "removed" | "under_review";
 export const BOOKING_NOTICE = "Community shares are not verified betting advice. Booking codes and claimed results may be inaccurate. Make independent decisions.";
@@ -6,7 +7,7 @@ export const VERIFICATION_LABEL: Record<Verification, string> = { unverified: "U
 /** Never accept moderation or verification fields from a user: this schema simply has no place for them. */
 export const bookingInput = z.object({
   bookingCode: z.string().trim().min(3).max(100).regex(/^[A-Za-z0-9][A-Za-z0-9 _.\-/]*$/, "Use letters, numbers and - _ . / only"),
-  bookmaker: z.string().trim().min(2).max(40).optional(), matchId: z.string().regex(/^(sm|fd):\d+$/).optional(), odds: z.number().min(1.01).max(10_000).optional(),
+  bookmaker: z.string().trim().min(2).max(40).optional(), matchId: z.string().regex(MATCH_ID_RE).optional(), odds: z.number().min(1.01).max(10_000).optional(),
   note: z.string().trim().max(300).optional(), visibility: z.enum(["public", "followers", "private"]).default("public"),
 }).strict();
 export function checkNote(note: string | undefined): { ok: true; text: string | null } | { ok: false; error: string } {

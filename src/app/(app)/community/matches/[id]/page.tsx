@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { MATCH_ID_RE } from "@/lib/football/match-id";
 import { notFound } from "next/navigation";
 import { Composer } from "@/components/Composer";
 import { PickForm } from "@/components/PickForm";
@@ -10,7 +11,7 @@ import { kickoffLabel, nowMs, pct, todayUtc, validDate } from "@/lib/app/format"
 import { getFeed, getMe, getMyMarketPicks, getMyPick } from "@/lib/community/server";
 export const dynamic = "force-dynamic";
 export default async function MatchThread({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ date?: string }> }) {
-  const id = decodeURIComponent((await params).id), date = validDate((await searchParams).date) ?? todayUtc(); if (!/^(sm|fd):\d+$/.test(id)) notFound();
+  const id = decodeURIComponent((await params).id), date = validDate((await searchParams).date) ?? todayUtc(); if (!MATCH_ID_RE.test(id)) notFound();
   const [me, day, feed, mine, extras] = await Promise.all([getMe(), loadDay(date), getFeed(id), getMyPick(id), getMyMarketPicks(id)]); if (!day.ok) return <div className="err">{day.error}</div>;
   const item = day.data.items.find(i => i.match.id === id); if (!item) notFound();
   const { match: m, prediction: p } = item, open = m.status === "scheduled" && Date.parse(m.kickoffUtc) > nowMs() + 60_000;

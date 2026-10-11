@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
+import { MATCH_ID_RE } from "@/lib/football/match-id";
 import { z } from "zod";
 import { AnalysisUnavailable, getAnalysis } from "@/lib/engine/ai/analysis";
 import { currentTier, hasTier } from "@/lib/entitlements";
 import { log } from "@/lib/logging/logger";
-const q = z.object({ date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/), id: z.string().regex(/^(sm|fd):\d+$/) });
+const q = z.object({ date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/), id: z.string().regex(MATCH_ID_RE) });
 /** Pro sees the blended result and reasons. Premium also sees every model's own answer. Free is asked to upgrade. */
 export async function GET(req: Request) {
   const sp = new URL(req.url).searchParams, p = q.safeParse({ date: sp.get("date"), id: sp.get("id") });

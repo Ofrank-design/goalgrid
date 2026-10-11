@@ -1,11 +1,12 @@
 import "server-only";
+import { MATCH_ID_RE } from "@/lib/football/match-id";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getViewer } from "@/lib/app/session";
 import { hasTier } from "@/lib/entitlements";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { isFrozen, movement, type VersionRow } from "./versioning";
-const q = z.object({ matchId: z.string().regex(/^(sm|fd):\d+$/) });
+const q = z.object({ matchId: z.string().regex(MATCH_ID_RE) });
 /** Shared by the history and movement endpoints. Signed-in users only. */
 export async function loadVersions(req: Request): Promise<NextResponse | { matchId: string; versions: VersionRow[]; frozen: boolean }> {
   const v = await getViewer(); if (!hasTier(v.tier, "pro")) return NextResponse.json({ error: "Prediction history needs a free account. Sign in to use it." }, { status: 403 });

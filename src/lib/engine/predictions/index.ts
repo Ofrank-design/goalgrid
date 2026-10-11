@@ -5,16 +5,36 @@ import { getFixtures } from "@/lib/engine/ingestion/fixtures";
 import { getHistory } from "@/lib/engine/ingestion/history";
 import { getMarketSignal, getWeatherSignal } from "@/lib/engine/ingestion/context";
 import { getMatchSignals } from "@/lib/engine/ingestion/signals";
-import { buildEnsemble, predictMatch, weightedMatrix } from "@/lib/engine/models/ensemble";
+import { analysisOf } from "@/lib/engine/analysis";
+import { teamFormOf, headToHeadOf, streakOf, venueOf } from "@/lib/engine/models/context-stats";
+import { baselinePrediction, buildEnsemble, historyTeam, predictMatch, weightedMatrix, type Ensemble } from "@/lib/engine/models/ensemble";
 import type { Match, LeagueSlug } from "@/types/football";
-import type { ModelMetric, Prediction } from "@/types/prediction";
+import type { ModelMetric, PredictCtx, Prediction } from "@/types/prediction";
 import { fitStrengths, lambdas } from "@/lib/engine/models/strengths";
 import { summarize } from "@/lib/engine/scenarios";
 import { buildRegistry, type RegistryEntry } from "@/lib/engine/registry";
 import { background } from "@/lib/server/background";
 import { readLeagueCache, readStoredPredictions, writeLeagueCache, writeStoredPredictions } from "./store";
-export interface PredictedMatch { match: Match; prediction: Prediction | null; reason?: string }
+/** `frozen` is true when the prediction was stored before kickoff, so it can be scored against the result. Anything computed after the fact is shown but never scored. */
+export interface PredictedMatch { match: Match; prediction: Prediction | null; reason?: string; frozen?: boolean }
 export interface PredictionsResult { date: string; source: string | null; stale: boolean; items: PredictedMatch[]; leagues: Record<string, { historyMatches: number; metrics: ModelMetric[] }> }
+/**
+ * One fixture, never skipped. The fixture's team names are first matched to the names in the history (providers spell clubs differently).
+ * If the models can price it, that is the prediction; if a club has no history, or too few models can price it, the result is a flagged
+ * baseline estimate (league averages, tilted to bookmaker odds when we have them), logged so the cause can be audited.
+ */
+const withAnalysis = (match: Match, p: Prediction): Prediction => { try { return { ...p, analysis: analysisOf(match, p) }; } catch (err) { log.warn("analysis failed", { match: match.id, message: (err as Error).message }); return p; } };
+function forecast(e: Ensemble, match: Match, ctx: PredictCtx): Prediction {
+  const home = historyTeam(e, match.home.name, match.home.slug), away = historyTeam(e, match.away.name, match.away.slug);
+  // Look up both teams' recent results and their past meetings first; they travel with the prediction for the card and the AI analysis.
+  const context = home && away && e.history ? { homeForm: teamFormOf(e.history, home), awayForm: teamFormOf(e.history, away), homeStreak: streakOf(e.history, home), awayStreak: streakOf(e.history, away), homeAtHome: venueOf(e.history, home, "home"), awayAway: venueOf(e.history, away, "away"), h2h: headToHeadOf(e.history, home, away) } : undefined;
+  try { const p = home && away && home !== away ? predictMatch(e, home, away, ctx) : null; if (p) return withAnalysis(match, { ...p, ...(context ? { context } : {}) }); }
+  catch (err) { log.warn("prediction failed", { match: match.id, message: (err as Error).message }); }
+  const unknown = [!home && match.home.name, !away && match.away.name].filter(Boolean).join(" and ");
+  log.warn("baseline estimate", { match: match.id, league: match.league.slug, unknown: unknown || "too few models could price it" });
+  const base = baselinePrediction(e, ctx, unknown ? `No match history found for ${unknown}, so this uses league averages${ctx.market ? " and bookmaker odds" : ""}.` : "Too few models could price this fixture, so this uses league averages.");
+  return withAnalysis(match, context ? { ...base, context } : base);
+}
 const ensembleFor = (l: LeagueSlug) => cached(`ensemble:${l}`, 12 * 3_600_000, 48 * 3_600_000, async () => buildEnsemble(await getHistory(l))).then(r => r.value);
 /**
  * Predictions for one date. Requests read what the refresh cron already computed and stored (engine_cache), so a visitor never waits for models to fit.
@@ -27,11 +47,10 @@ export async function getPredictions(date: string, opts: { refresh?: boolean } =
   const missing = fx.matches.filter(m => !stored.has(m.id)), slugs = [...new Set(missing.map(m => m.league.slug))];
   const ens = new Map(await Promise.all(slugs.map(async l => { try { return [l, await ensembleFor(l)] as const; } catch (e) { log.warn("ensemble unavailable", { league: l, message: (e as Error).message }); return [l, null] as const; } })));
   const items = await Promise.all(fx.matches.map(async (match): Promise<PredictedMatch> => {
-    const hit = stored.get(match.id); if (hit) return { match, prediction: hit };
+    const hit = stored.get(match.id); if (hit) return { match, prediction: hit, frozen: true };
     const e = ens.get(match.league.slug); if (!e) return { match, prediction: null, reason: "No match history available for this league yet" };
     let market = null; if (match.status === "scheduled" || match.status === "live") { try { const s = await getMarketSignal(match); market = s ? s.impliedProbabilities : null; } catch { /* market is optional */ } }
-    const prediction = predictMatch(e, match.home.slug, match.away.slug, { market, kickoffUtc: match.kickoffUtc });
-    return { match, prediction, ...(prediction ? {} : { reason: "Not enough history for one of these teams" }) };
+    return { match, prediction: forecast(e, match, { market, kickoffUtc: match.kickoffUtc }) };
   }));
   const leagues: PredictionsResult["leagues"] = {};
   for (const [l, e] of ens) if (e) leagues[l] = { historyMatches: e.historyMatches, metrics: e.metrics };
@@ -39,7 +58,7 @@ export async function getPredictions(date: string, opts: { refresh?: boolean } =
   const metricsOnly = [...new Set(fx.matches.map(m => m.league.slug))].filter(l => !leagues[l]);
   await Promise.all(metricsOnly.map(async l => { const m = await readLeagueCache<PredictionsResult["leagues"][string]>(l, "metrics", 48 * 3_600_000); if (m) leagues[l] = m; }));
   // Write back what was just computed so other server instances and later requests do not refit.
-  const fresh = items.flatMap(i => i.prediction && !stored.has(i.match.id) ? [{ match: i.match, prediction: i.prediction }] : []);
+  const fresh = items.flatMap(i => i.prediction && !i.prediction.baseline && !stored.has(i.match.id) ? [{ match: i.match, prediction: i.prediction }] : []);
   const persist = () => Promise.all([
     writeStoredPredictions(fresh),
     ...(opts.refresh ? [...ens].flatMap(([l, e]) => e ? [writeLeagueCache(l, "metrics", leagues[l]), writeLeagueCache(l, "models", leagueModelsOf(l as LeagueSlug, e))] : []) : []),
@@ -55,8 +74,7 @@ export async function predictOne(date: string, matchId: string): Promise<(Predic
   const open = match.status === "scheduled" || match.status === "live"; let market = null, weather = null;
   if (open) { try { const s = await getMarketSignal(match); market = s ? s.impliedProbabilities : null; } catch { /* optional */ } try { const w = await getWeatherSignal(match); weather = w ? { tempC: w.tempC, windKmh: w.windKmh, rainChancePct: w.rainChancePct } : null; } catch { /* optional */ } }
   let signals; if (open) { try { const s = await getMatchSignals(match); if (s.availabilityShift != null) signals = { availabilityShift: s.availabilityShift }; } catch { /* optional */ } }
-  const prediction = predictMatch(e, match.home.slug, match.away.slug, { market, weather, kickoffUtc: match.kickoffUtc, signals });
-  return { match, prediction, ...(prediction ? {} : { reason: "Not enough history for one of these teams" }), leagueMetrics: e.metrics };
+  return { match, prediction: forecast(e, match, { market, weather, kickoffUtc: match.kickoffUtc, signals }), leagueMetrics: e.metrics };
 }
 
 /** The model library for one league: registry entries plus the meta component fits. Pro and Premium only (checked in the route). */

@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { MATCH_ID_RE } from "@/lib/football/match-id";
 import Link from "next/link";
 import { Crest } from "@/components/Crest";
 import { AiPanel } from "@/components/AiPanel";
@@ -11,7 +12,7 @@ import { SaveMatchButton } from "@/components/SaveMatchButton";
 export const dynamic = "force-dynamic";
 export default async function MatchPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ date?: string }> }) {
   const id = decodeURIComponent((await params).id), date = validDate((await searchParams).date) ?? todayUtc();
-  if (!/^(sm|fd):\d+$/.test(id)) notFound();
+  if (!MATCH_ID_RE.test(id)) notFound();
   const [v, item0] = await Promise.all([getViewer(), predictOne(date, id).catch(() => "error" as const)]); if (item0 === "error") return <div className="err">Match data is unavailable right now. Check that a football data key is set.</div>;
   const item = item0; if (!item) return notFound();
   const { match: m, prediction: p } = item, pro = hasTier(v.tier, "pro"), crests = process.env.GOALGRID_ALLOW_CRESTS !== "false", ctx = await getMatchContext(m);
@@ -31,6 +32,7 @@ export default async function MatchPage({ params, searchParams }: { params: Prom
         {p && <><h2>Models</h2>{pro ? <div className="card scroll"><table><thead><tr><th>MODEL</th><th>WEIGHT</th><th>HOME</th><th>DRAW</th><th>AWAY</th></tr></thead><tbody>{p.models.map(x => <tr key={x.id}><td>{x.name}</td><td className="n">{pct(x.weight)}</td><td className="n">{pct(x.home)}</td><td className="n">{pct(x.draw)}</td><td className="n">{pct(x.away)}</td></tr>)}</tbody></table></div>
           : <div className="card"><p className="note">Model by model comparison is free with an account. <Link href="/sign-in?next=/dashboard" style={{ color: "#35d4ee" }}>Sign in</Link></p></div>}</>}
         {pro && p && p.abstained.length > 0 && <details><summary>{p.abstained.length} of {p.modelsUsed + p.abstained.length} models waiting for data</summary><ul style={{ paddingLeft: 18, display: "grid", gap: 4 }}>{p.abstained.map(a => <li key={a.id} className="note"><b>{a.name}</b>: needs {a.reason}</li>)}</ul></details>}
+        {p?.analysis && <><h2>Form and matchup</h2><div className="card" style={{ display: "grid", gap: 10 }}><p>{p.analysis.summary}</p><p><b>Form and head to head.</b> {p.analysis.form}</p><p><b>Scoring matchup.</b> {p.analysis.tactical}</p><p className="note"><b>Uncertainty.</b> {p.analysis.uncertainty}</p></div></>}
         <h2>AI analysis</h2><div className="card">{pro && p ? <AiPanel date={date} id={m.id} /> : <p className="note">AI analysis is free with an account. <Link href="/sign-in?next=/dashboard" style={{ color: "#35d4ee" }}>Sign in</Link></p>}</div>
       </div>
       <div>

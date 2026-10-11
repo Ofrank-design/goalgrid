@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
+import { MATCH_ID_RE } from "@/lib/football/match-id";
 import { z } from "zod";
 import { fail, requireMember } from "@/lib/community/api";
 import { marketPick } from "@/lib/community/markets";
 import { LIMIT_MESSAGE, allow } from "@/lib/security/limits";
 import { getFixtures } from "@/lib/engine/ingestion/fixtures";
 import { supabaseAdmin } from "@/lib/supabase/admin";
-const base = z.object({ matchId: z.string().regex(/^(sm|fd):\d+$/), date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/) });
+const base = z.object({ matchId: z.string().regex(MATCH_ID_RE), date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/) });
 /** One pick per match per market, changeable until kickoff. Points, correctness and settlement time are written only by the server job. */
 export async function POST(req: Request) {
   const me = await requireMember(); if (me instanceof NextResponse) return me; if (!(await allow(me.id, "prediction"))) return fail(LIMIT_MESSAGE, 429);

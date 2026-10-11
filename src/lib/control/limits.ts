@@ -26,7 +26,7 @@ export const GOALGRID_LIMITS = {
     maxFilesPerPost: intEnv("GOALGRID_MAX_FILES_PER_POST", 2, 1, 10),
   },
   model: {
-    candidateMaxModels: intEnv("GOALGRID_MODEL_CANDIDATE_MAX", 30, 8, 40),
+    candidateMaxModels: intEnv("GOALGRID_MODEL_CANDIDATE_MAX", 31, 8, 40),
     activeMaxModels: intEnv("GOALGRID_MODEL_ACTIVE_MAX", 15, 3, 15),
   },
   ai: {

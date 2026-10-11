@@ -14,7 +14,7 @@ const NOW = new Date(Date.UTC(2026, 3, 1));
 const t0 = Date.now(); const ens = buildEnsemble(hist, NOW); console.log("ensemble fit ms", Date.now() - t0, "matches", hist.length);
 test("math: lgamma and poisson", () => { assert.ok(Math.abs(lgamma(5) - Math.log(24)) < 1e-9); assert.ok(Math.abs(poissonPmf(2, 1.5) - Math.exp(-1.5) * 1.125) < 1e-9); });
 test("all history models fit and are scored out of sample", () => {
-  assert.equal(ALL_MODELS.length, 83); assert.equal(ens.metrics.length, 83);
+  assert.equal(ALL_MODELS.length, 84); assert.equal(ens.metrics.length, 84);
   const scored = ens.metrics.filter(m => m.logLoss != null), tested = ens.metrics.filter(m => m.status === "tested");
   assert.ok(scored.length >= 20 && scored.length <= 30, `scored ${scored.length}`);
   assert.ok(tested.length >= 5 && tested.length <= 15, `active tested ${tested.length}`); assert.ok(ens.metrics.every(m => m.status !== "shadow" || m.weight === 0));
@@ -23,7 +23,7 @@ test("all history models fit and are scored out of sample", () => {
 });
 test("every model returns valid probabilities", () => {
   const p = predictMatch(ens, "strong-a", "weak-j", { market: { home: 0.8, draw: 0.13, away: 0.07 }, kickoffUtc: "2026-04-02T15:00:00Z" })!;
-  assert.equal(p.models.length + p.abstained.length, 83); assert.ok(p.models.length <= 15 && p.models.length >= 8, `used ${p.models.length}`);
+  assert.equal(p.models.length + p.abstained.length, 84); assert.ok(p.models.length <= 15 && p.models.length >= 8, `used ${p.models.length}`);
   for (const m of p.models) assert.ok(Math.abs(m.home + m.draw + m.away - 1) < 0.01 && m.home >= 0 && m.draw >= 0 && m.away >= 0, m.id);
   assert.ok(Math.abs(Object.values(p.probabilities).reduce((a, b) => a + b, 0) - 1) < 0.005);
 });
@@ -52,7 +52,7 @@ import { tilt } from "../src/lib/engine/models/extra-math";
 import { matrixFrom } from "../src/lib/engine/models/math";
 test("registry: every base model listed once, statuses measured, meta components present, retired entries explained", () => {
   const reg = buildRegistry(ens), ids = reg.map(r => r.id); assert.equal(new Set(ids).size, ids.length);
-  assert.equal(reg.filter(r => r.kind === "base" && r.status !== "retired").length, 83); assert.ok(reg.some(r => r.id === "stacked-meta-learner") && reg.some(r => r.id === "conformal-wrapper"));
+  assert.equal(reg.filter(r => r.kind === "base" && r.status !== "retired").length, 84); assert.ok(reg.some(r => r.id === "stacked-meta-learner") && reg.some(r => r.id === "conformal-wrapper"));
   const retired = reg.filter(r => r.status === "retired"); assert.equal(retired.length, 15); assert.ok(retired.every(r => r.note && r.note.length > 10));
   assert.ok(reg.filter(r => r.status === "production").every(r => r.lastTrainedAt) && reg.filter(r => r.status === "research").every(r => r.lastTrainedAt === null));
   console.log("production", reg.filter(r => r.status === "production").length, "degraded", reg.filter(r => r.status === "degraded").map(r => r.id).join(","), "stack", JSON.stringify(ens.stack), "conformal", JSON.stringify(ens.conformal));

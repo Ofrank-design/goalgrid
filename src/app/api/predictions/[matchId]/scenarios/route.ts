@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { MATCH_ID_RE } from "@/lib/football/match-id";
 import { z } from "zod";
 import { scenarioBase } from "@/lib/engine/predictions";
 import { PRESETS, compareSummaries, resolveScenarios, summarize, tiltMatrix } from "@/lib/engine/scenarios";
@@ -8,7 +9,7 @@ const q = z.object({ date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/), scenario: z.
 /** GET /api/predictions/sm:123/scenarios?date=2026-10-10&scenario=home-striker-out,heavy-rain&homeAttack=0.95. Signed-in users only. Re-prices a real fixture under assumptions and shows baseline, scenario and the change in percentage points. Nothing here changes the real prediction. */
 export async function GET(req: Request, ctx: { params: Promise<{ matchId: string }> }) {
   const tier = await currentTier().catch(() => "free" as const); if (!hasTier(tier, "premium")) return NextResponse.json({ error: "Scenario analysis needs a free account. Sign in to use it." }, { status: 403 });
-  const { matchId } = await ctx.params, id = decodeURIComponent(matchId); if (!/^(sm|fd):\d+$/.test(id)) return NextResponse.json({ error: "Invalid match id" }, { status: 400 });
+  const { matchId } = await ctx.params, id = decodeURIComponent(matchId); if (!MATCH_ID_RE.test(id)) return NextResponse.json({ error: "Invalid match id" }, { status: 400 });
   const sp = Object.fromEntries(new URL(req.url).searchParams), p = q.safeParse(sp); if (!p.success) return NextResponse.json({ error: "date (YYYY-MM-DD) is required" }, { status: 400 });
   const ids = (p.data.scenario ?? "").split(",").map(s => s.trim()).filter(Boolean); if (ids.length > 6) return NextResponse.json({ error: "Choose up to 6 scenarios" }, { status: 400 });
   try {

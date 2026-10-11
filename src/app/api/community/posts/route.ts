@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
+import { MATCH_ID_RE } from "@/lib/football/match-id";
 import { z } from "zod";
 import { fail, requireMember } from "@/lib/community/api";
 import { POST_LIMIT, parseBlocked, validateBody } from "@/lib/community/rules";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { LIMIT_MESSAGE, allow } from "@/lib/security/limits";
 import { createNotification } from "@/lib/notifications/server";
-const schema = z.object({ matchId: z.string().regex(/^(sm|fd):\d+$/).nullable().optional(), parentId: z.string().uuid().nullable().optional(), circleId: z.string().uuid().nullable().optional(), body: z.string() });
+const schema = z.object({ matchId: z.string().regex(MATCH_ID_RE).nullable().optional(), parentId: z.string().uuid().nullable().optional(), circleId: z.string().uuid().nullable().optional(), body: z.string() });
 export async function POST(req: Request) {
   const me = await requireMember(); if (me instanceof NextResponse) return me;
   if (!(await allow(me.id, "post"))) return fail(LIMIT_MESSAGE, 429);

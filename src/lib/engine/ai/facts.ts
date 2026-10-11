@@ -13,6 +13,10 @@ export function buildFacts(i: { match: Match; prediction: Prediction; market: Ma
   add(`${m.league.name}: ${m.home.name} (home) vs ${m.away.name} (away), kickoff ${m.kickoffUtc}.`);
   add(`Statistical consensus of ${p.modelsUsed} models: home win ${pct(p.probabilities.home)}%, draw ${pct(p.probabilities.draw)}%, away win ${pct(p.probabilities.away)}%. Expected goals ${p.expectedGoals.home} to ${p.expectedGoals.away}. Model agreement ${pct(p.agreement)} out of 100.`);
   add(`Most likely score ${p.mostLikelyScore.home}-${p.mostLikelyScore.away} (${pct(p.mostLikelyScore.probability)}%). Both teams score ${pct(p.btts)}%. Over 2.5 goals ${pct(p.over25)}%.`);
+  if (p.baseline) add(`Baseline estimate only: ${p.note ?? "the models had no history for one of the teams"} Treat these numbers as low evidence and say so.`);
+  if (p.context) { const c = p.context, h = c.h2h, fm = (t: typeof c.homeForm) => (t.played ? `${t.form} (${t.goalsFor} scored, ${t.goalsAgainst} conceded in ${t.played})` : "no recent matches");
+    add(`Recent form, oldest to newest: ${m.home.name} ${fm(c.homeForm)}; ${m.away.name} ${fm(c.awayForm)}.`);
+    add(h.meetings ? `Head to head, last ${h.meetings} meetings: ${m.home.name} ${h.homeWins} wins, ${h.draws} draws, ${m.away.name} ${h.awayWins} wins.` : `No past meetings of these two clubs in the model history.`); }
   add(`Data volume: the least experienced of the two teams has about ${Math.round(p.dataQuality * 25)} recent league matches in the model history.`);
   if (i.market) {
     const q = i.market.impliedProbabilities; add(`Bookmaker consensus (${i.market.bookmakers} bookmakers, margin removed): home ${pct(q.home)}%, draw ${pct(q.draw)}%, away ${pct(q.away)}%.`);

@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
+import { MATCH_ID_RE } from "@/lib/football/match-id";
 import { z } from "zod";
 import { fail, requireMember } from "@/lib/community/api";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { awardFor } from "@/lib/community/awards";
 import { LIMIT_MESSAGE, allow } from "@/lib/security/limits";
 import { getFixtures } from "@/lib/engine/ingestion/fixtures";
-const schema = z.object({ matchId: z.string().regex(/^(sm|fd):\d+$/), date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/), pick: z.enum(["home", "draw", "away"]), confidence: z.number().int().min(40).max(95) });
+const schema = z.object({ matchId: z.string().regex(MATCH_ID_RE), date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/), pick: z.enum(["home", "draw", "away"]), confidence: z.number().int().min(40).max(95) });
 /** One pick per match per user, changeable until kickoff. The server checks the kickoff time, not the browser. */
 export async function POST(req: Request) {
   const me = await requireMember(); if (me instanceof NextResponse) return me;

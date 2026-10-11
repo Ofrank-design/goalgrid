@@ -12,15 +12,20 @@ import { claytonCopula, frankCopula, gaussianCopula } from "./copula-models";
 import { WAITING_MODELS } from "./specialist";
 import { fitCalibrator, logLoss, type Calibrator } from "../calibration";
 import { MAXG, normalize, outcomeIdx, softmax } from "./math";
+import { resolveTeam } from "../../football/team-resolver";
+import { headToHead } from "./h2h";
 import { GOALGRID_LIMITS } from "../../control/limits";
 const [poisson, dixonColes, bivariatePoisson, negativeBinomial, recentForm] = GOAL_MODELS, [elo, logistic, boosted, marketModel] = RATING_MODELS;
 /** The base model library: the original 50, then the history based additions and the registered-but-waiting models. Stacking and conformal prediction (99, 100) are ensemble components, not entries here. */
-export const ALL_MODELS: Model[] = [poisson, dixonColes, bivariatePoisson, negativeBinomial, recentForm, elo, logistic, boosted, marketModel, zeroInflated, hurdle, generalizedPoisson, conwayMaxwell, skellam, dynamicPoisson, dynamicDixonColes, bayesHierarchical, bayesBivariate, bayesZip, homeAwaySplit, xgStrength, expectedPoints, rollingIndex, glicko2, trueSkill, pageRank, massey, colley, bradleyTerry, naiveBayes, randomForest, extraTrees, svm, knn, probit, bayesLogit, catBoost, lightGbm, xgBoost, feedforward, tabNet, tcn, lstm, transformer, availability, lineupStrength, tacticalMatchup, restCongestion, weatherVenue, newsSentiment,
+export const ALL_MODELS: Model[] = [poisson, dixonColes, bivariatePoisson, negativeBinomial, recentForm, headToHead, elo, logistic, boosted, marketModel, zeroInflated, hurdle, generalizedPoisson, conwayMaxwell, skellam, dynamicPoisson, dynamicDixonColes, bayesHierarchical, bayesBivariate, bayesZip, homeAwaySplit, xgStrength, expectedPoints, rollingIndex, glicko2, trueSkill, pageRank, massey, colley, bradleyTerry, naiveBayes, randomForest, extraTrees, svm, knn, probit, bayesLogit, catBoost, lightGbm, xgBoost, feedforward, tabNet, tcn, lstm, transformer, availability, lineupStrength, tacticalMatchup, restCongestion, weatherVenue, newsSentiment,
   ordinalLogistic, lda, qda, rda, gam, elasticNet, dirichletForm, betaBtts, betaOver, cleanSheet, hmmForm, kalmanStrength, dlmTrend, frankCopula, claytonCopula, gaussianCopula, matrixFactor, ...WAITING_MODELS];
 export interface StackFit { fams: string[]; theta: number[]; b: [number, number]; llStacked: number; llWeighted: number; n: number }
 export interface ConformalFit { alpha: number; threshold: number; n: number; avgSetSize: number }
 export interface Ensemble { fitted: { model: Model; fitted: FittedModel; weight: number; calibrate?: Calibrator }[]; waiting: { id: string; name: string; reason: string }[]; metrics: ModelMetric[]; games: Map<string, number>; historyMatches: number;
-  builtAt: string; matrixIds: string[]; baselineLogLoss: number | null; stack: StackFit | null; conformal: ConformalFit | null }
+  builtAt: string; matrixIds: string[]; baselineLogLoss: number | null; stack: StackFit | null; conformal: ConformalFit | null;
+  /** League base rates from the history: outcome shares and average goals. Used for baseline estimates. */ base?: LeagueBase;
+  /** The history the models were fitted on, oldest first. Used to read team form and head-to-head for a fixture. */ history?: HistMatch[] }
+export interface LeagueBase { home: number; draw: number; away: number; goalsHome: number; goalsAway: number }
 const safe = <T,>(f: () => T): T | null => { try { return f(); } catch { return null; } };
 const OUT = ["home", "draw", "away"] as const, r3 = (x: number) => Math.round(x * 1000) / 1000, DEGRADE_MARGIN = 0.03;
 const pool = (fp: number[][], theta: number[], b: [number, number]) => softmax([0, 1, 2].map(k => fp.reduce((s, p, f) => s + theta[f] * Math.log(Math.max(p[k], 1e-6)), 0) + (k === 0 ? b[0] : k === 2 ? b[1] : 0)));
@@ -79,7 +84,9 @@ export function buildEnsemble(history: HistMatch[], now = new Date()): Ensemble 
   const contextActive = fitted.filter(x => x.model.family === "context").slice(0, Math.min(6, activeCap - 3));
   // The market model also keeps a reserved slot: it only contributes when odds are supplied, and it is what the market-gap figure is measured against.
   const marketActive = fitted.filter(x => x.model.family === "market");
-  const selected = [...fitted.filter(x => x.model.family !== "context" && x.model.family !== "market").slice(0, Math.max(0, activeCap - contextActive.length - marketActive.length)), ...contextActive, ...marketActive];
+  // Head-to-head keeps a reserved slot too, but only if it passed validation (an untested or degraded model has no weight and stays out).
+  const h2hActive = fitted.filter(x => x.model.id === "h2h" && x.weight > 0);
+  const selected = [...fitted.filter(x => x.model.family !== "context" && x.model.family !== "market" && x.model.id !== "h2h").slice(0, Math.max(0, activeCap - contextActive.length - marketActive.length - h2hActive.length)), ...contextActive, ...marketActive, ...h2hActive];
   const selectedIds = new Set(selected.map(x => x.model.id));
   for (const x of fitted) {
     if (selectedIds.has(x.model.id)) continue;
@@ -113,7 +120,7 @@ export function buildEnsemble(history: HistMatch[], now = new Date()): Ensemble 
       if (llS < llW - 0.005) { const all = fitPool(F, ys); stack = { fams, theta: all.theta.map(r3), b: [r3(all.b[0]), r3(all.b[1])], llStacked: r3(llS), llWeighted: r3(llW), n: F.length - half }; } else stack = null; }
   }
   const probe = h[h.length - 1], matrixIds = probe ? fitted.filter(x => safe(() => x.fitted.predict(probe.home, probe.away, { kickoffUtc: probe.date })?.matrix)).map(x => x.model.id) : [];
-  return { fitted, waiting, metrics, games, historyMatches: h.length, builtAt: new Date().toISOString(), matrixIds, baselineLogLoss: baseLL, stack, conformal };
+  return { fitted, waiting, metrics, games, historyMatches: h.length, builtAt: new Date().toISOString(), matrixIds, baselineLogLoss: baseLL, stack, conformal, base: leagueBase(h), history: h };
 }
 /** One match, every model. Models without the data they need abstain and are listed, never guessed. Returns null if fewer than three history models can price the fixture. */
 export function predictMatch(e: Ensemble, home: string, away: string, ctx: PredictCtx = {}): Prediction | null {
@@ -125,14 +132,14 @@ export function predictMatch(e: Ensemble, home: string, away: string, ctx: Predi
   if (e.stack) { const fp = e.stack.fams.map(f => { const o = used.filter(u => u.x.model.family === f); return o.length ? [o.reduce((a, u) => a + u.o.home, 0) / o.length, o.reduce((a, u) => a + u.o.draw, 0) / o.length, o.reduce((a, u) => a + u.o.away, 0) / o.length] : [1 / 3, 1 / 3, 1 / 3]; }), ps = pool(fp, e.stack.theta, e.stack.b);
     p = normalize({ home: 0.5 * p.home + 0.5 * ps[0], draw: 0.5 * p.draw + 0.5 * ps[1], away: 0.5 * p.away + 0.5 * ps[2] }); stacked = true; }
   const mats = used.filter(u => u.o.matrix), MW = mats.reduce((a, u) => a + u.x.weight, 0) || 1;
-  let best = { home: 0, away: 0, probability: 0 }, btts = 0, over = 0, eh = 0, ea = 0;
-  for (let x = 0; x <= MAXG; x++) for (let y = 0; y <= MAXG; y++) { const v = mats.reduce((a, u) => a + u.x.weight * u.o.matrix![x][y], 0) / MW; if (v > best.probability) best = { home: x, away: y, probability: v }; if (x > 0 && y > 0) btts += v; if (x + y > 2) over += v; eh += v * x; ea += v * y; }
+  let best = { home: 0, away: 0, probability: 0 }, btts = 0, over = 0, o15 = 0, o35 = 0, eh = 0, ea = 0; const cells: { home: number; away: number; probability: number }[] = [];
+  for (let x = 0; x <= MAXG; x++) for (let y = 0; y <= MAXG; y++) { const v = mats.reduce((a, u) => a + u.x.weight * u.o.matrix![x][y], 0) / MW; if (v > best.probability) best = { home: x, away: y, probability: v }; if (x > 0 && y > 0) btts += v; if (x + y > 2) over += v; if (x + y > 1) o15 += v; if (x + y > 3) o35 += v; cells.push({ home: x, away: y, probability: v }); eh += v * x; ea += v * y; }
   const sd = (f: (o: typeof hist[number]["o"]) => number) => { const v = hist.map(u => f(u.o)), m = v.reduce((a, b) => a + b, 0) / v.length; return Math.sqrt(v.reduce((a, b) => a + (b - m) ** 2, 0) / v.length); };
   const agreement = Math.max(0, Math.min(1, 1 - 4 * (sd(o => o.home) + sd(o => o.draw) + sd(o => o.away)) / 3)), g = Math.min(e.games.get(home) ?? 0, e.games.get(away) ?? 0), dataQuality = Math.min(1, g / 25);
   const mk = used.find(u => u.x.model.family === "market")?.o, HW = hist.reduce((a, u) => a + u.x.weight, 0), hp = normalize({ home: hist.reduce((a, u) => a + u.x.weight * u.o.home, 0) / HW, draw: hist.reduce((a, u) => a + u.x.weight * u.o.draw, 0) / HW, away: hist.reduce((a, u) => a + u.x.weight * u.o.away, 0) / HW });
   const pv = [p.home, p.draw, p.away], conformal = e.conformal ? { set: OUT.filter((_, k) => 1 - pv[k] <= e.conformal!.threshold) as ("home" | "draw" | "away")[], coverage: 1 - e.conformal.alpha } : null;
   return { probabilities: { home: r3(p.home), draw: r3(p.draw), away: r3(p.away) }, expectedGoals: { home: Math.round(eh * 100) / 100, away: Math.round(ea * 100) / 100 }, mostLikelyScore: { home: best.home, away: best.away, probability: r3(best.probability) },
-    btts: r3(btts), over25: r3(over), agreement: r3(agreement), dataQuality: r3(dataQuality), confidence: Math.round(100 * (0.65 * agreement + 0.35 * dataQuality)), marketGap: mk ? r3(Math.max(Math.abs(hp.home - mk.home), Math.abs(hp.draw - mk.draw), Math.abs(hp.away - mk.away))) : null,
+    btts: r3(btts), over25: r3(over), over15: r3(o15), over35: r3(o35), topScores: cells.sort((a, b) => b.probability - a.probability).slice(0, 3).map(c => ({ ...c, probability: r3(c.probability) })), agreement: r3(agreement), dataQuality: r3(dataQuality), confidence: Math.round(100 * (0.65 * agreement + 0.35 * dataQuality)), marketGap: mk ? r3(Math.max(Math.abs(hp.home - mk.home), Math.abs(hp.draw - mk.draw), Math.abs(hp.away - mk.away))) : null,
     models: used.map(u => ({ id: u.x.model.id, name: u.x.model.name, family: u.x.model.family, weight: r3(u.x.weight / W), home: r3(u.o.home), draw: r3(u.o.draw), away: r3(u.o.away) })), conformal, stacked, modelsUsed: used.length, abstained };
 }
 
@@ -141,4 +148,39 @@ export function weightedMatrix(e: Ensemble, home: string, away: string, ctx: Pre
   const used = e.fitted.flatMap(x => { const o0 = safe(() => x.fitted.predict(home, away, ctx)); if (!o0?.matrix) return []; const q = x.calibrate ? x.calibrate([o0.home, o0.draw, o0.away]) : null; void q; return [{ w: x.weight, m: o0.matrix }]; });
   const W = used.reduce((a, u) => a + u.w, 0); if (!used.length || !W) return null;
   return Array.from({ length: MAXG + 1 }, (_, x) => Array.from({ length: MAXG + 1 }, (_, y) => used.reduce((a, u) => a + u.w * u.m[x][y], 0) / W));
+}
+
+/** League base rates, with smoothing so a short history never gives zero or NaN. Falls back to typical top-flight figures with no history. */
+function leagueBase(h: HistMatch[]): LeagueBase {
+  const n = h.length; if (n < 30) return { home: 0.45, draw: 0.26, away: 0.29, goalsHome: 1.45, goalsAway: 1.15 };
+  const c = [0, 0, 0]; let gh = 0, ga = 0; for (const m of h) { c[outcomeIdx(m.hg, m.ag)]++; gh += m.hg; ga += m.ag; }
+  const rate = (k: number) => (c[k] + 1) / (n + 3), ok = (v: number, d: number) => (Number.isFinite(v) && v > 0.3 && v < 4 ? v : d);
+  return { home: rate(0), draw: rate(1), away: rate(2), goalsHome: ok(gh / n, 1.45), goalsAway: ok(ga / n, 1.15) };
+}
+
+/** Maps a fixture's team name onto the name the history uses (providers spell clubs differently). Null when the club has no history in this league. */
+export function historyTeam(e: Ensemble, name: string, slug: string): string | null {
+  if (e.games.has(slug)) return slug;
+  const hit = resolveTeam(name, [...e.games.keys()].map(k => ({ name: k.replace(/-/g, " "), key: k })));
+  return hit ? hit.key : null;
+}
+
+const poissonRow = (l: number) => { const r: number[] = []; let p = Math.exp(-l); for (let k = 0; k <= MAXG; k++) { r.push(p); p *= l / (k + 1); } return r; };
+const scoreMatrix = (lh: number, la: number) => { const a = poissonRow(lh), b = poissonRow(la); return a.map(x => b.map(y => x * y)); };
+const outcomeOf = (m: number[][]) => { let h = 0, d = 0, a = 0; for (let x = 0; x <= MAXG; x++) for (let y = 0; y <= MAXG; y++) { if (x > y) h += m[x][y]; else if (x === y) d += m[x][y]; else a += m[x][y]; } return { home: h, draw: d, away: a }; };
+
+/**
+ * An honest estimate for a fixture the models cannot price (a club with no history, such as a newly promoted one). League average goals
+ * give the score matrix; if bookmaker odds exist the matchup is tilted until the matrix agrees with them. Confidence is deliberately low
+ * and the result is flagged so it is never presented, stored or scored as a model prediction.
+ */
+export function baselinePrediction(e: Ensemble, ctx: PredictCtx, note: string): Prediction {
+  const b = e.base ?? { home: 0.45, draw: 0.26, away: 0.29, goalsHome: 1.45, goalsAway: 1.15 }, mk = ctx.market && [ctx.market.home, ctx.market.draw, ctx.market.away].every(Number.isFinite) ? normalize({ home: ctx.market.home, draw: ctx.market.draw, away: ctx.market.away }) : null;
+  let tilt = 0;
+  if (mk) { const want = mk.home - mk.away; let lo = -1.5, hi = 1.5; for (let i = 0; i < 24; i++) { tilt = (lo + hi) / 2; const o = outcomeOf(scoreMatrix(b.goalsHome * Math.exp(tilt), b.goalsAway * Math.exp(-tilt))); if (o.home - o.away < want) lo = tilt; else hi = tilt; } }
+  const lh = b.goalsHome * Math.exp(tilt), la = b.goalsAway * Math.exp(-tilt), m = scoreMatrix(lh, la), o = mk ?? normalize({ home: b.home, draw: b.draw, away: b.away });
+  let best = { home: 1, away: 1, probability: 0 }, btts = 0, over = 0, o15 = 0, o35 = 0, eh = 0, ea = 0; const cells: { home: number; away: number; probability: number }[] = [];
+  for (let x = 0; x <= MAXG; x++) for (let y = 0; y <= MAXG; y++) { const v = m[x][y]; if (v > best.probability) best = { home: x, away: y, probability: v }; if (x > 0 && y > 0) btts += v; if (x + y > 2) over += v; if (x + y > 1) o15 += v; if (x + y > 3) o35 += v; cells.push({ home: x, away: y, probability: v }); eh += v * x; ea += v * y; }
+  return { probabilities: { home: r3(o.home), draw: r3(o.draw), away: r3(o.away) }, expectedGoals: { home: Math.round(eh * 100) / 100, away: Math.round(ea * 100) / 100 }, mostLikelyScore: { home: best.home, away: best.away, probability: r3(best.probability) },
+    btts: r3(btts), over25: r3(over), over15: r3(o15), over35: r3(o35), topScores: cells.sort((a, b) => b.probability - a.probability).slice(0, 3).map(c => ({ ...c, probability: r3(c.probability) })), agreement: 0, dataQuality: 0, confidence: mk ? 25 : 10, marketGap: null, models: [], conformal: null, stacked: false, modelsUsed: 0, abstained: [], baseline: true, note };
 }

@@ -14,4 +14,17 @@ export interface Prediction {
   probabilities: Probs; expectedGoals: { home: number; away: number }; mostLikelyScore: { home: number; away: number; probability: number };
   btts: number; over25: number; confidence: number; agreement: number; dataQuality: number; marketGap: number | null;
   models: { id: string; name: string; family: ModelFamily; weight: number; home: number; draw: number; away: number }[]; conformal?: { set: ("home" | "draw" | "away")[]; coverage: number } | null; stacked?: boolean; modelsUsed: number; abstained: { id: string; name: string; reason: string }[];
+  /** True when no model could price the fixture (a team with no history): league base rates and, if present, bookmaker odds. Never stored or scored. */ baseline?: boolean; note?: string;
+  /** More markets from the same score matrix: totals and the three likeliest scorelines. */ over15?: number; over35?: number; topScores?: { home: number; away: number; probability: number }[];
+  /** What the engine looked up before predicting, and the plain-language read of it. */ context?: PredictionContext; analysis?: PredictionAnalysis;
 }
+
+export interface TeamFormContext { form: string; played: number; goalsFor: number; goalsAgainst: number; points: number }
+export interface StreakContext { wins: number; unbeaten: number; losses: number; winless: number; scoredIn: number; cleanSheets: number }
+export interface VenueContext { played: number; wins: number; draws: number; losses: number; goalsFor: number; goalsAgainst: number }
+/** Both teams' recent results, current runs and ground records, and their past meetings, read from the league history before the models run. */
+export interface PredictionContext {
+  homeForm: TeamFormContext; awayForm: TeamFormContext; homeStreak?: StreakContext; awayStreak?: StreakContext; homeAtHome?: VenueContext; awayAway?: VenueContext;
+  h2h: { meetings: number; homeWins: number; draws: number; awayWins: number; last: { date: string; home: string; away: string; hg: number; ag: number }[] };
+}
+export interface PredictionAnalysis { summary: string; form: string; tactical: string; uncertainty: string }
