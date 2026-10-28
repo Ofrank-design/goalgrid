@@ -353,28 +353,6 @@ npm run scan
 npm run build
 ```
 
-Environment setup:
+## License
 
-```bash
-cp .env.example .env.local
-```
-
-Never place private credentials in `NEXT_PUBLIC_*` variables or source code.
-
----
-
-# Documentation
-
-This root `README.md` is the **single public product README**.
-
-Operational engineering references that are useful during development remain under `docs/` so the public README stays focused on the product rather than becoming a maintenance manual.
-
----
-
-# GoalGrid's North Star
-
-GoalGrid is not trying to win by having the longest feature list.
-
-It is trying to make football intelligence **understandable, inspectable, reproducible and useful**.
-
-**Simple on the surface. Deep underneath. Controlled by evidence. Honest about uncertainty.**
+MIT. See [LICENSE](LICENSE).
