@@ -328,30 +328,9 @@ The principle is:
 
 ---
 
-# Stack
-
-- Next.js
-- React
-- TypeScript
-- Supabase Auth
-- PostgreSQL
-- Supabase RLS
-- Server-side provider adapters
-- Trigger.dev/background jobs where durable execution is useful
-- CSS-first interaction and animation
 
 ---
 
-# Development
-
-```bash
-npm ci
-npm run dev
-npm run typecheck
-npm test
-npm run scan
-npm run build
-```
 
 ## License
 
