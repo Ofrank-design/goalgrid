@@ -201,23 +201,7 @@ Leaderboards are server-generated. Losing predictions cannot be deleted, locked 
 
 ---
 
-# Search & Navigation
 
-Global search covers:
-
-**Teams · Players · Leagues · Community**
-
-Results route into the relevant GoalGrid page rather than dead-end cards.
-
-The main navigation provides direct pathways for:
-
-**Home · Matches · Predictions · Leagues · Teams · Pricing · Analytics · Live**
-
-Inside the app, users also have dedicated areas for Pro, Premium, Simulation Lab, Game Intelligence Lab, Community, Challenges, Notifications and administration.
-
-Search is available from the navigation and supports **⌘K / Ctrl+K** as a shortcut.
-
----
 
 # Free · Pro · Premium
 
