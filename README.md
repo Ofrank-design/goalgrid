@@ -148,7 +148,7 @@ Simulation output is stored separately from real football data and can never bec
 
 ---
 
-# Game Intelligence Lab — Premium
+# Game Intelligence Lab
 
 Game Intelligence Lab is separate from the football match simulator.
 
