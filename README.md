@@ -87,7 +87,7 @@ Prediction records become immutable after the relevant cutoff and scoring is per
 
 ---
 
-# Simulation Lab — Pro
+# Simulation Lab 
 
 Simulation Lab is GoalGrid's controlled hypothetical football environment.
 
